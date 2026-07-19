@@ -9,4 +9,6 @@ import java.util.List;
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
     List<Item> findByStatus(ItemStatus status);
+
+    boolean existsByOwnerId(Long ownerId);
 }

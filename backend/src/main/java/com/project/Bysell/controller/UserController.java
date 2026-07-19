@@ -2,17 +2,21 @@ package com.project.Bysell.controller;
 
 import com.project.Bysell.dto.UserRequest;
 import com.project.Bysell.dto.UserResponse;
+import com.project.Bysell.dto.UserUpdateRequest;
 import com.project.Bysell.model.User;
 import com.project.Bysell.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -77,5 +81,31 @@ public class UserController {
                 .phoneNumber(user.getPhoneNumber())
                 .createdAt(user.getCreatedAt())
                 .build();
+    }
+
+    @PatchMapping("/{id}")
+    public UserResponse updateUser(@PathVariable Long id, @Valid @RequestBody UserUpdateRequest request) {
+        User user = userService.updateUser(
+                id,
+                request.getRequesterId(),
+                request.getFirstName(),
+                request.getLastName(),
+                request.getEmail(),
+                request.getPhoneNumber());
+
+        return UserResponse.builder()
+                .id(user.getId())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .email(user.getEmail())
+                .phoneNumber(user.getPhoneNumber())
+                .createdAt(user.getCreatedAt())
+                .build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id, @RequestParam Long requesterId) {
+        userService.deleteUser(id, requesterId);
+        return ResponseEntity.noContent().build();
     }
 }
