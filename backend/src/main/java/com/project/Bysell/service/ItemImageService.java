@@ -63,4 +63,19 @@ public class ItemImageService {
     public List<ItemImage> getImagesForItem(Long itemId) {
         return itemImageRepository.findByItemId(itemId);
     }
+
+    public void deleteImagesForItem(Long itemId) {
+        List<ItemImage> images = itemImageRepository.findByItemId(itemId);
+
+        for (ItemImage image : images) {
+            String filename = image.getImageUrl().replace("/images/", "");
+            try {
+                Files.deleteIfExists(Path.of(uploadDir, filename));
+            } catch (IOException e) {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to delete image file", e);
+            }
+        }
+
+        itemImageRepository.deleteAll(images);
+    }
 }

@@ -8,6 +8,7 @@ import com.project.Bysell.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
@@ -18,11 +19,13 @@ public class ItemService {
 
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
+    private final ItemImageService itemImageService;
 
     @Autowired
-    public ItemService(ItemRepository itemRepository, UserRepository userRepository) {
+    public ItemService(ItemRepository itemRepository, UserRepository userRepository, ItemImageService itemImageService) {
         this.itemRepository = itemRepository;
         this.userRepository = userRepository;
+        this.itemImageService = itemImageService;
     }
 
     public Item createItem(Item item, Long ownerId) {
@@ -54,5 +57,17 @@ public class ItemService {
         item.setPrice(price);
 
         return itemRepository.save(item);
+    }
+
+    @Transactional
+    public void deleteItem(Long id, Long requesterId) {
+        Item item = getItemById(id);
+
+        if (!item.getOwner().getId().equals(requesterId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the owner can delete this item");
+        }
+
+        itemImageService.deleteImagesForItem(id);
+        itemRepository.delete(item);
     }
 }
