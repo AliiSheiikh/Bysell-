@@ -2,6 +2,7 @@ package com.project.Bysell.controller;
 
 import com.project.Bysell.dto.ItemRequest;
 import com.project.Bysell.dto.ItemResponse;
+import com.project.Bysell.dto.ItemUpdateRequest;
 import com.project.Bysell.model.Item;
 import com.project.Bysell.service.ItemService;
 import jakarta.validation.Valid;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -69,6 +71,26 @@ public class ItemController {
     @GetMapping("/{id}")
     public ItemResponse getItem(@PathVariable Long id) {
         Item item = itemService.getItemById(id);
+
+        return ItemResponse.builder()
+                .id(item.getId())
+                .title(item.getTitle())
+                .description(item.getDescription())
+                .price(item.getPrice())
+                .status(item.getStatus())
+                .ownerId(item.getOwner().getId())
+                .createdAt(item.getCreatedAt())
+                .build();
+    }
+
+    @PatchMapping("/{id}")
+    public ItemResponse updateItem(@PathVariable Long id, @Valid @RequestBody ItemUpdateRequest request) {
+        Item item = itemService.updateItem(
+                id,
+                request.getRequesterId(),
+                request.getTitle(),
+                request.getDescription(),
+                request.getPrice());
 
         return ItemResponse.builder()
                 .id(item.getId())

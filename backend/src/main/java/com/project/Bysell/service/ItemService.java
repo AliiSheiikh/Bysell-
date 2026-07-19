@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -39,5 +40,19 @@ public class ItemService {
     public Item getItemById(Long id) {
         return itemRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item not found with id: " + id));
+    }
+
+    public Item updateItem(Long id, Long requesterId, String title, String description, BigDecimal price) {
+        Item item = getItemById(id);
+
+        if (!item.getOwner().getId().equals(requesterId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the owner can edit this item");
+        }
+
+        item.setTitle(title);
+        item.setDescription(description);
+        item.setPrice(price);
+
+        return itemRepository.save(item);
     }
 }
