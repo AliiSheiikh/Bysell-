@@ -8,10 +8,14 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/items")
@@ -45,5 +49,35 @@ public class ItemController {
                 .build();
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping
+    public List<ItemResponse> getAvailableItems() {
+        return itemService.getAvailableItems().stream()
+                .map(item -> ItemResponse.builder()
+                        .id(item.getId())
+                        .title(item.getTitle())
+                        .description(item.getDescription())
+                        .price(item.getPrice())
+                        .status(item.getStatus())
+                        .ownerId(item.getOwner().getId())
+                        .createdAt(item.getCreatedAt())
+                        .build())
+                .toList();
+    }
+
+    @GetMapping("/{id}")
+    public ItemResponse getItem(@PathVariable Long id) {
+        Item item = itemService.getItemById(id);
+
+        return ItemResponse.builder()
+                .id(item.getId())
+                .title(item.getTitle())
+                .description(item.getDescription())
+                .price(item.getPrice())
+                .status(item.getStatus())
+                .ownerId(item.getOwner().getId())
+                .createdAt(item.getCreatedAt())
+                .build();
     }
 }

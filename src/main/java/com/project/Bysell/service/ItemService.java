@@ -1,6 +1,7 @@
 package com.project.Bysell.service;
 
 import com.project.Bysell.model.Item;
+import com.project.Bysell.model.ItemStatus;
 import com.project.Bysell.model.User;
 import com.project.Bysell.repository.ItemRepository;
 import com.project.Bysell.repository.UserRepository;
@@ -8,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 
 @Service
 public class ItemService {
@@ -27,5 +30,14 @@ public class ItemService {
 
         item.setOwner(owner);
         return itemRepository.save(item);
+    }
+
+    public List<Item> getAvailableItems() {
+        return itemRepository.findByStatus(ItemStatus.AVAILABLE);
+    }
+
+    public Item getItemById(Long id) {
+        return itemRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item not found with id: " + id));
     }
 }
