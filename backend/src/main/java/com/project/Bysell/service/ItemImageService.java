@@ -64,6 +64,31 @@ public class ItemImageService {
         return itemImageRepository.findByItemId(itemId);
     }
 
+    public void deleteImage(Long itemId, Long imageId, Long requesterId) {
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item not found with id: " + itemId));
+
+        if (!item.getOwner().getId().equals(requesterId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the owner can delete this item's images");
+        }
+
+        ItemImage image = itemImageRepository.findById(imageId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Image not found with id: " + imageId));
+
+        if (!image.getItem().getId().equals(itemId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Image not found for this item");
+        }
+
+        String filename = image.getImageUrl().replace("/images/", "");
+        try {
+            Files.deleteIfExists(Path.of(uploadDir, filename));
+        } catch (IOException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to delete image file", e);
+        }
+
+        itemImageRepository.delete(image);
+    }
+
     public void deleteImagesForItem(Long itemId) {
         List<ItemImage> images = itemImageRepository.findByItemId(itemId);
 
