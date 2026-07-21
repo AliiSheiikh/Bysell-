@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react'
 import { getItems } from '../api'
+import type { Item } from '../types'
 
 export default function ProductsPage() {
-  const [items, setItems] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const [items, setItems] = useState<Item[]>([])
+  const [loading, setLoading] = useState<boolean>(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     getItems()
       .then((data) => setItems(data))
-      .catch((err) => setError(err.message))
+      .catch((err: Error) => setError(err.message))
       .finally(() => setLoading(false))
   }, [])
 

@@ -1,15 +1,15 @@
-import { useState } from 'react'
+import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { createItem } from '../api'
 
 export default function CreateItemPage() {
-  const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
-  const [price, setPrice] = useState('')
-  const [error, setError] = useState(null)
+  const [title, setTitle] = useState<string>('')
+  const [description, setDescription] = useState<string>('')
+  const [price, setPrice] = useState<string>('')
+  const [error, setError] = useState<string | null>(null)
   const navigate = useNavigate()
 
-  async function handleSubmit(e) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setError(null)
 
@@ -21,7 +21,7 @@ export default function CreateItemPage() {
       })
       navigate('/')
     } catch (err) {
-      setError(err.message)
+      setError((err as Error).message)
     }
   }
 

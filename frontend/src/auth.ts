@@ -1,17 +1,17 @@
 const TOKEN_KEY = 'bysell_token'
 
-export function saveToken(token) {
+export function saveToken(token: string): void {
   localStorage.setItem(TOKEN_KEY, token)
 }
 
-export function getToken() {
+export function getToken(): string | null {
   return localStorage.getItem(TOKEN_KEY)
 }
 
-export function clearToken() {
+export function clearToken(): void {
   localStorage.removeItem(TOKEN_KEY)
 }
 
-export function isLoggedIn() {
+export function isLoggedIn(): boolean {
   return getToken() !== null
 }
