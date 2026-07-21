@@ -5,6 +5,7 @@ import com.project.Bysell.repository.ItemRepository;
 import com.project.Bysell.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -15,14 +16,17 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepository, ItemRepository itemRepository) {
+    public UserService(UserRepository userRepository, ItemRepository itemRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.itemRepository = itemRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    public User createUser(User user) {
+    public User createUser(User user, String rawPassword) {
+        user.setPasswordHash(passwordEncoder.encode(rawPassword));
         return userRepository.save(user);
     }
 

@@ -41,7 +41,7 @@ public class UserController {
                 .phoneNumber(request.getPhoneNumber())
                 .build();
 
-        User savedUser = userService.createUser(user);
+        User savedUser = userService.createUser(user, request.getPassword());
 
         UserResponse response = UserResponse.builder()
                 .id(savedUser.getId())
