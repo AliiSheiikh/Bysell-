@@ -1,5 +1,5 @@
 import { getToken } from './auth'
-import type { Category, Item, LoginResponse } from './types'
+import type { Category, Item, ItemDetail, LoginResponse } from './types'
 
 const BASE = '/api'
 
@@ -34,6 +34,10 @@ export function getItems(filters: ItemFilters = {}): Promise<Item[]> {
   return fetch(`${BASE}/items${query ? `?${query}` : ''}`).then((response) => handle<Item[]>(response))
 }
 
+export function getItem(id: number): Promise<ItemDetail> {
+  return fetch(`${BASE}/items/${id}`).then((response) => handle<ItemDetail>(response))
+}
+
 interface CreateItemData {
   title: string
   description: string | null
@@ -41,11 +45,15 @@ interface CreateItemData {
   category: Category
 }
 
-export function createItem(data: CreateItemData): Promise<Item> {
+export function createItem(data: CreateItemData, images: File[]): Promise<Item> {
+  const formData = new FormData()
+  formData.append('item', new Blob([JSON.stringify(data)], { type: 'application/json' }))
+  images.forEach((image) => formData.append('images', image))
+
   return fetch(`${BASE}/items`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...authHeaders() },
-    body: JSON.stringify(data),
+    headers: authHeaders(),
+    body: formData,
   }).then((response) => handle<Item>(response))
 }
 

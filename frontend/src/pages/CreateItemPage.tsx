@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { createItem } from '../api'
 import { isLoggedIn } from '../auth'
@@ -9,6 +9,7 @@ export default function CreateItemPage() {
   const [description, setDescription] = useState<string>('')
   const [price, setPrice] = useState<string>('')
   const [category, setCategory] = useState<Category>(CATEGORIES[0])
+  const [images, setImages] = useState<File[]>([])
   const [error, setError] = useState<string | null>(null)
   const navigate = useNavigate()
 
@@ -18,17 +19,33 @@ export default function CreateItemPage() {
     }
   }, [navigate])
 
+  function handleImagesChange(e: ChangeEvent<HTMLInputElement>) {
+    setImages(Array.from(e.target.files ?? []))
+  }
+
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setError(null)
 
+    if (images.length < 1) {
+      setError('Please select at least one image.')
+      return
+    }
+    if (images.length > 8) {
+      setError('You can upload at most 8 images.')
+      return
+    }
+
     try {
-      await createItem({
-        title,
-        description: description || null,
-        price: Number(price),
-        category,
-      })
+      await createItem(
+        {
+          title,
+          description: description || null,
+          price: Number(price),
+          category,
+        },
+        images,
+      )
       navigate('/')
     } catch (err) {
       setError((err as Error).message)
@@ -63,6 +80,12 @@ export default function CreateItemPage() {
             ))}
           </select>
         </label>
+
+        <label>
+          Images (1-8)
+          <input type="file" accept="image/*" multiple onChange={handleImagesChange} required />
+        </label>
+        {images.length > 0 && <p className="image-count">{images.length} image(s) selected</p>}
 
         <button type="submit">Create Item</button>
         {error && <p className="error">{error}</p>}

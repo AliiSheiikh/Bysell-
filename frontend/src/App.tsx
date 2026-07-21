@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom'
 import ProductsPage from './pages/ProductsPage'
 import CreateItemPage from './pages/CreateItemPage'
+import ItemDetailPage from './pages/ItemDetailPage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import { isLoggedIn, clearToken } from './auth'
@@ -42,6 +43,7 @@ function App() {
         <Routes>
           <Route path="/" element={<ProductsPage />} />
           <Route path="/create" element={<CreateItemPage />} />
+          <Route path="/items/:id" element={<ItemDetailPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
         </Routes>

@@ -1,14 +1,18 @@
 package com.project.Bysell.controller;
 
+import com.project.Bysell.dto.ItemDetailResponse;
 import com.project.Bysell.dto.ItemRequest;
 import com.project.Bysell.dto.ItemResponse;
 import com.project.Bysell.dto.ItemUpdateRequest;
 import com.project.Bysell.model.Item;
 import com.project.Bysell.model.ItemCategory;
+import com.project.Bysell.model.User;
+import com.project.Bysell.service.ItemImageService;
 import com.project.Bysell.service.ItemService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,7 +23,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -29,14 +35,17 @@ import java.util.List;
 public class ItemController {
 
     private final ItemService itemService;
+    private final ItemImageService itemImageService;
 
     @Autowired
-    public ItemController(ItemService itemService) {
+    public ItemController(ItemService itemService, ItemImageService itemImageService) {
         this.itemService = itemService;
+        this.itemImageService = itemImageService;
     }
 
-    @PostMapping
-    public ResponseEntity<ItemResponse> createItem(@Valid @RequestBody ItemRequest request,
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ItemResponse> createItem(@RequestPart("item") @Valid ItemRequest request,
+                                                     @RequestParam("images") List<MultipartFile> images,
                                                      @AuthenticationPrincipal Long ownerId) {
         Item item = Item.builder()
                 .title(request.getTitle())
@@ -45,7 +54,7 @@ public class ItemController {
                 .category(request.getCategory())
                 .build();
 
-        Item savedItem = itemService.createItem(item, ownerId);
+        Item savedItem = itemService.createItem(item, ownerId, images);
 
         ItemResponse response = ItemResponse.builder()
                 .id(savedItem.getId())
@@ -54,6 +63,7 @@ public class ItemController {
                 .price(savedItem.getPrice())
                 .status(savedItem.getStatus())
                 .category(savedItem.getCategory())
+                .mainImageUrl(itemImageService.getMainImageUrl(savedItem.getId()))
                 .ownerId(savedItem.getOwner().getId())
                 .createdAt(savedItem.getCreatedAt())
                 .build();
@@ -74,6 +84,7 @@ public class ItemController {
                         .price(item.getPrice())
                         .status(item.getStatus())
                         .category(item.getCategory())
+                        .mainImageUrl(itemImageService.getMainImageUrl(item.getId()))
                         .ownerId(item.getOwner().getId())
                         .createdAt(item.getCreatedAt())
                         .build())
@@ -81,17 +92,21 @@ public class ItemController {
     }
 
     @GetMapping("/{id}")
-    public ItemResponse getItem(@PathVariable Long id) {
+    public ItemDetailResponse getItem(@PathVariable Long id) {
         Item item = itemService.getItemById(id);
+        User owner = item.getOwner();
 
-        return ItemResponse.builder()
+        return ItemDetailResponse.builder()
                 .id(item.getId())
                 .title(item.getTitle())
                 .description(item.getDescription())
                 .price(item.getPrice())
                 .status(item.getStatus())
                 .category(item.getCategory())
-                .ownerId(item.getOwner().getId())
+                .imageUrls(itemImageService.getImageUrlsForItem(id))
+                .ownerId(owner.getId())
+                .sellerName(owner.getFirstName() + " " + owner.getLastName())
+                .sellerEmail(owner.getEmail())
                 .createdAt(item.getCreatedAt())
                 .build();
     }
@@ -114,6 +129,7 @@ public class ItemController {
                 .price(item.getPrice())
                 .status(item.getStatus())
                 .category(item.getCategory())
+                .mainImageUrl(itemImageService.getMainImageUrl(item.getId()))
                 .ownerId(item.getOwner().getId())
                 .createdAt(item.getCreatedAt())
                 .build();

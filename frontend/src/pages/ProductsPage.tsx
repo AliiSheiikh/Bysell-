@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react'
+import { Link } from 'react-router-dom'
 import { getItems } from '../api'
 import { CATEGORIES, type Category, type Item } from '../types'
 
@@ -61,12 +62,13 @@ export default function ProductsPage() {
 
       <div className="item-grid">
         {items.map((item) => (
-          <div className="item-card" key={item.id}>
+          <Link to={`/items/${item.id}`} className="item-card" key={item.id}>
+            {item.mainImageUrl && <img className="item-thumbnail" src={item.mainImageUrl} alt={item.title} />}
             <h2>{item.title}</h2>
             <p>{item.description}</p>
             <p className="price">${item.price}</p>
             {item.category && <p className="category">{item.category}</p>}
-          </div>
+          </Link>
         ))}
       </div>
     </div>

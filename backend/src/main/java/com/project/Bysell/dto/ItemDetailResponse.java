@@ -8,11 +8,12 @@ import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Builder
 @AllArgsConstructor
-public class ItemResponse {
+public class ItemDetailResponse {
 
     private Long id;
     private String title;
@@ -20,7 +21,9 @@ public class ItemResponse {
     private BigDecimal price;
     private ItemStatus status;
     private ItemCategory category;
-    private String mainImageUrl;
+    private List<String> imageUrls;
     private Long ownerId;
+    private String sellerName;
+    private String sellerEmail;
     private LocalDateTime createdAt;
 }

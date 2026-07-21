@@ -21,6 +21,42 @@
   border: 1px solid #ccc;
   border-radius: 8px;
   padding: 16px;
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.item-thumbnail {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.item-detail-images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.item-detail-image {
+  width: 220px;
+  height: 165px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.seller-info {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #ccc;
+}
+
+.image-count {
+  font-size: 0.85em;
+  color: #666;
 }
 
 .price {

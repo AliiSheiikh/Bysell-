@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
@@ -17,6 +18,9 @@ import java.util.List;
 
 @Service
 public class ItemService {
+
+    private static final int MIN_IMAGES = 1;
+    private static final int MAX_IMAGES = 8;
 
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
@@ -29,12 +33,24 @@ public class ItemService {
         this.itemImageService = itemImageService;
     }
 
-    public Item createItem(Item item, Long ownerId) {
+    public Item createItem(Item item, Long ownerId, List<MultipartFile> images) {
+        if (images == null || images.size() < MIN_IMAGES) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "At least one image is required");
+        }
+        if (images.size() > MAX_IMAGES) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A maximum of " + MAX_IMAGES + " images is allowed");
+        }
+        itemImageService.validateImageTypes(images);
+
         User owner = userRepository.findById(ownerId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with id: " + ownerId));
 
         item.setOwner(owner);
-        return itemRepository.save(item);
+        Item savedItem = itemRepository.save(item);
+
+        itemImageService.storeImagesForNewItem(savedItem, images);
+
+        return savedItem;
     }
 
     public List<Item> searchItems(String keyword, ItemCategory category, BigDecimal minPrice, BigDecimal maxPrice) {

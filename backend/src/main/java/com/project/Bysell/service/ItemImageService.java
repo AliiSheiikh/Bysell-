@@ -47,6 +47,22 @@ public class ItemImageService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the owner can upload images for this item");
         }
 
+        return storeImage(item, file);
+    }
+
+    public void validateImageTypes(List<MultipartFile> files) {
+        for (MultipartFile file : files) {
+            if (!ALLOWED_IMAGE_TYPES.containsKey(file.getContentType())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only JPEG, PNG, GIF, or WebP images are allowed");
+            }
+        }
+    }
+
+    public List<ItemImage> storeImagesForNewItem(Item item, List<MultipartFile> files) {
+        return files.stream().map(file -> storeImage(item, file)).toList();
+    }
+
+    private ItemImage storeImage(Item item, MultipartFile file) {
         String extension = ALLOWED_IMAGE_TYPES.get(file.getContentType());
         if (extension == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only JPEG, PNG, GIF, or WebP images are allowed");
@@ -72,7 +88,19 @@ public class ItemImageService {
     }
 
     public List<ItemImage> getImagesForItem(Long itemId) {
-        return itemImageRepository.findByItemId(itemId);
+        return itemImageRepository.findByItemIdOrderByIdAsc(itemId);
+    }
+
+    public List<String> getImageUrlsForItem(Long itemId) {
+        return itemImageRepository.findByItemIdOrderByIdAsc(itemId).stream()
+                .map(ItemImage::getImageUrl)
+                .toList();
+    }
+
+    public String getMainImageUrl(Long itemId) {
+        return itemImageRepository.findFirstByItemIdOrderByIdAsc(itemId)
+                .map(ItemImage::getImageUrl)
+                .orElse(null);
     }
 
     public void deleteImage(Long itemId, Long imageId, Long requesterId) {
@@ -101,7 +129,7 @@ public class ItemImageService {
     }
 
     public void deleteImagesForItem(Long itemId) {
-        List<ItemImage> images = itemImageRepository.findByItemId(itemId);
+        List<ItemImage> images = itemImageRepository.findByItemIdOrderByIdAsc(itemId);
 
         for (ItemImage image : images) {
             String filename = image.getImageUrl().replace("/images/", "");

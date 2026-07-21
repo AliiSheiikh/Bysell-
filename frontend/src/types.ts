@@ -17,7 +17,22 @@ export interface Item {
   price: number
   status: string
   category: Category | null
+  mainImageUrl: string | null
   ownerId: number
+  createdAt: string
+}
+
+export interface ItemDetail {
+  id: number
+  title: string
+  description: string | null
+  price: number
+  status: string
+  category: Category | null
+  imageUrls: string[]
+  ownerId: number
+  sellerName: string
+  sellerEmail: string
   createdAt: string
 }
 
