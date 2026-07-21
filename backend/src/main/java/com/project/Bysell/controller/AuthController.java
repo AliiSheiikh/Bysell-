@@ -1,8 +1,9 @@
 package com.project.Bysell.controller;
 
 import com.project.Bysell.dto.LoginRequest;
-import com.project.Bysell.dto.UserResponse;
+import com.project.Bysell.dto.LoginResponse;
 import com.project.Bysell.model.User;
+import com.project.Bysell.service.JwtService;
 import com.project.Bysell.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,23 +17,24 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final UserService userService;
+    private final JwtService jwtService;
 
     @Autowired
-    public AuthController(UserService userService) {
+    public AuthController(UserService userService, JwtService jwtService) {
         this.userService = userService;
+        this.jwtService = jwtService;
     }
 
     @PostMapping("/login")
-    public UserResponse login(@Valid @RequestBody LoginRequest request) {
+    public LoginResponse login(@Valid @RequestBody LoginRequest request) {
         User user = userService.login(request.getEmail(), request.getPassword());
+        String token = jwtService.generateToken(user);
 
-        return UserResponse.builder()
-                .id(user.getId())
+        return LoginResponse.builder()
+                .token(token)
+                .userId(user.getId())
                 .firstName(user.getFirstName())
-                .lastName(user.getLastName())
                 .email(user.getEmail())
-                .phoneNumber(user.getPhoneNumber())
-                .createdAt(user.getCreatedAt())
                 .build();
     }
 }
