@@ -47,6 +47,9 @@ public class Item {
     @Column(nullable = false)
     private ItemStatus status;
 
+    @Enumerated(EnumType.STRING)
+    private ItemCategory category;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = false)
     @ToString.Exclude

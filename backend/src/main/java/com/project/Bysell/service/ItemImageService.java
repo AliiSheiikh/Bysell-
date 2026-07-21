@@ -15,10 +15,17 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
 public class ItemImageService {
+
+    private static final Map<String, String> ALLOWED_IMAGE_TYPES = Map.of(
+            "image/jpeg", ".jpg",
+            "image/png", ".png",
+            "image/gif", ".gif",
+            "image/webp", ".webp");
 
     private final ItemImageRepository itemImageRepository;
     private final ItemRepository itemRepository;
@@ -40,15 +47,15 @@ public class ItemImageService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the owner can upload images for this item");
         }
 
+        String extension = ALLOWED_IMAGE_TYPES.get(file.getContentType());
+        if (extension == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only JPEG, PNG, GIF, or WebP images are allowed");
+        }
+
         try {
             Path uploadPath = Path.of(uploadDir);
             Files.createDirectories(uploadPath);
 
-            String extension = "";
-            String originalFilename = file.getOriginalFilename();
-            if (originalFilename != null && originalFilename.contains(".")) {
-                extension = originalFilename.substring(originalFilename.lastIndexOf('.'));
-            }
             String filename = UUID.randomUUID() + extension;
 
             Files.copy(file.getInputStream(), uploadPath.resolve(filename));
@@ -100,8 +107,8 @@ public class ItemImageService {
             String filename = image.getImageUrl().replace("/images/", "");
             try {
                 Files.deleteIfExists(Path.of(uploadDir, filename));
-            } catch (IOException e) {
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to delete image file", e);
+            } catch (IOException ignored) {
+                // best-effort: a stray file we can't remove shouldn't block deleting the item's records
             }
         }
 

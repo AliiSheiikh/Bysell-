@@ -1,6 +1,7 @@
 package com.project.Bysell.service;
 
 import com.project.Bysell.model.Item;
+import com.project.Bysell.model.ItemCategory;
 import com.project.Bysell.model.ItemStatus;
 import com.project.Bysell.model.User;
 import com.project.Bysell.repository.ItemRepository;
@@ -36,8 +37,8 @@ public class ItemService {
         return itemRepository.save(item);
     }
 
-    public List<Item> getAvailableItems() {
-        return itemRepository.findByStatus(ItemStatus.AVAILABLE);
+    public List<Item> searchItems(String keyword, ItemCategory category, BigDecimal minPrice, BigDecimal maxPrice) {
+        return itemRepository.search(keyword, category, minPrice, maxPrice);
     }
 
     public Item getItemById(Long id) {
@@ -45,7 +46,7 @@ public class ItemService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item not found with id: " + id));
     }
 
-    public Item updateItem(Long id, Long requesterId, String title, String description, BigDecimal price) {
+    public Item updateItem(Long id, Long requesterId, String title, String description, BigDecimal price, ItemCategory category) {
         Item item = getItemById(id);
 
         if (!item.getOwner().getId().equals(requesterId)) {
@@ -55,6 +56,7 @@ public class ItemService {
         item.setTitle(title);
         item.setDescription(description);
         item.setPrice(price);
+        item.setCategory(category);
 
         return itemRepository.save(item);
     }

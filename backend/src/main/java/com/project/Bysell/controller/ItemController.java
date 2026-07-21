@@ -4,6 +4,7 @@ import com.project.Bysell.dto.ItemRequest;
 import com.project.Bysell.dto.ItemResponse;
 import com.project.Bysell.dto.ItemUpdateRequest;
 import com.project.Bysell.model.Item;
+import com.project.Bysell.model.ItemCategory;
 import com.project.Bysell.service.ItemService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +18,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -39,6 +42,7 @@ public class ItemController {
                 .title(request.getTitle())
                 .description(request.getDescription())
                 .price(request.getPrice())
+                .category(request.getCategory())
                 .build();
 
         Item savedItem = itemService.createItem(item, ownerId);
@@ -49,6 +53,7 @@ public class ItemController {
                 .description(savedItem.getDescription())
                 .price(savedItem.getPrice())
                 .status(savedItem.getStatus())
+                .category(savedItem.getCategory())
                 .ownerId(savedItem.getOwner().getId())
                 .createdAt(savedItem.getCreatedAt())
                 .build();
@@ -57,14 +62,18 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemResponse> getAvailableItems() {
-        return itemService.getAvailableItems().stream()
+    public List<ItemResponse> searchItems(@RequestParam(required = false) String keyword,
+                                           @RequestParam(required = false) ItemCategory category,
+                                           @RequestParam(required = false) BigDecimal minPrice,
+                                           @RequestParam(required = false) BigDecimal maxPrice) {
+        return itemService.searchItems(keyword, category, minPrice, maxPrice).stream()
                 .map(item -> ItemResponse.builder()
                         .id(item.getId())
                         .title(item.getTitle())
                         .description(item.getDescription())
                         .price(item.getPrice())
                         .status(item.getStatus())
+                        .category(item.getCategory())
                         .ownerId(item.getOwner().getId())
                         .createdAt(item.getCreatedAt())
                         .build())
@@ -81,6 +90,7 @@ public class ItemController {
                 .description(item.getDescription())
                 .price(item.getPrice())
                 .status(item.getStatus())
+                .category(item.getCategory())
                 .ownerId(item.getOwner().getId())
                 .createdAt(item.getCreatedAt())
                 .build();
@@ -94,7 +104,8 @@ public class ItemController {
                 requesterId,
                 request.getTitle(),
                 request.getDescription(),
-                request.getPrice());
+                request.getPrice(),
+                request.getCategory());
 
         return ItemResponse.builder()
                 .id(item.getId())
@@ -102,6 +113,7 @@ public class ItemController {
                 .description(item.getDescription())
                 .price(item.getPrice())
                 .status(item.getStatus())
+                .category(item.getCategory())
                 .ownerId(item.getOwner().getId())
                 .createdAt(item.getCreatedAt())
                 .build();

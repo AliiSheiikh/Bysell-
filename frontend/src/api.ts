@@ -1,5 +1,5 @@
 import { getToken } from './auth'
-import type { Item, LoginResponse } from './types'
+import type { Category, Item, LoginResponse } from './types'
 
 const BASE = '/api'
 
@@ -16,14 +16,29 @@ function authHeaders(): Record<string, string> {
   return token ? { Authorization: `Bearer ${token}` } : {}
 }
 
-export function getItems(): Promise<Item[]> {
-  return fetch(`${BASE}/items`).then((response) => handle<Item[]>(response))
+export interface ItemFilters {
+  keyword?: string
+  category?: Category
+  minPrice?: number
+  maxPrice?: number
+}
+
+export function getItems(filters: ItemFilters = {}): Promise<Item[]> {
+  const params = new URLSearchParams()
+  if (filters.keyword) params.set('keyword', filters.keyword)
+  if (filters.category) params.set('category', filters.category)
+  if (filters.minPrice !== undefined) params.set('minPrice', String(filters.minPrice))
+  if (filters.maxPrice !== undefined) params.set('maxPrice', String(filters.maxPrice))
+
+  const query = params.toString()
+  return fetch(`${BASE}/items${query ? `?${query}` : ''}`).then((response) => handle<Item[]>(response))
 }
 
 interface CreateItemData {
   title: string
   description: string | null
   price: number
+  category: Category
 }
 
 export function createItem(data: CreateItemData): Promise<Item> {

@@ -1,13 +1,22 @@
-import { useState, type FormEvent } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { createItem } from '../api'
+import { isLoggedIn } from '../auth'
+import { CATEGORIES, type Category } from '../types'
 
 export default function CreateItemPage() {
   const [title, setTitle] = useState<string>('')
   const [description, setDescription] = useState<string>('')
   const [price, setPrice] = useState<string>('')
+  const [category, setCategory] = useState<Category>(CATEGORIES[0])
   const [error, setError] = useState<string | null>(null)
   const navigate = useNavigate()
+
+  useEffect(() => {
+    if (!isLoggedIn()) {
+      navigate('/login')
+    }
+  }, [navigate])
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -18,6 +27,7 @@ export default function CreateItemPage() {
         title,
         description: description || null,
         price: Number(price),
+        category,
       })
       navigate('/')
     } catch (err) {
@@ -43,6 +53,15 @@ export default function CreateItemPage() {
           Price
           <input type="number" step="0.01" min="0" value={price}
             onChange={(e) => setPrice(e.target.value)} required />
+        </label>
+
+        <label>
+          Category
+          <select value={category} onChange={(e) => setCategory(e.target.value as Category)}>
+            {CATEGORIES.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
         </label>
 
         <button type="submit">Create Item</button>

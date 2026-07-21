@@ -1,5 +1,6 @@
 package com.project.Bysell.dto;
 
+import com.project.Bysell.model.ItemCategory;
 import com.project.Bysell.model.ItemStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,6 +19,7 @@ public class ItemResponse {
     private String description;
     private BigDecimal price;
     private ItemStatus status;
+    private ItemCategory category;
     private Long ownerId;
     private LocalDateTime createdAt;
 }

@@ -1,5 +1,6 @@
 package com.project.Bysell.dto;
 
+import com.project.Bysell.model.ItemCategory;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -20,4 +21,7 @@ public class ItemRequest {
     @NotNull
     @Positive
     private BigDecimal price;
+
+    @NotNull
+    private ItemCategory category;
 }
