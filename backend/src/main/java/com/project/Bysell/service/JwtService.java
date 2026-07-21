@@ -1,6 +1,7 @@
 package com.project.Bysell.service;
 
 import com.project.Bysell.model.User;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,5 +32,17 @@ public class JwtService {
                 .expiration(expiration)
                 .signWith(key)
                 .compact();
+    }
+
+    public Long extractUserId(String token) {
+        SecretKey key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+
+        Claims claims = Jwts.parser()
+                .verifyWith(key)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+
+        return Long.valueOf(claims.getSubject());
     }
 }
