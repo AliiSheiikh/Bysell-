@@ -1,0 +1,49 @@
+.app {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px;
+  font-family: system-ui, sans-serif;
+}
+
+.nav {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.item-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.item-card {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.price {
+  font-weight: bold;
+}
+
+.create-item-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 300px;
+}
+
+.create-item-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.create-item-form input {
+  padding: 6px 8px;
+}
+
+.error {
+  color: #c0392b;
+}
