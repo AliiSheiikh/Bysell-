@@ -2,7 +2,6 @@ package com.project.Bysell.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,7 +20,4 @@ public class UserUpdateRequest {
     private String email;
 
     private String phoneNumber;
-
-    @NotNull
-    private Long requesterId;
 }

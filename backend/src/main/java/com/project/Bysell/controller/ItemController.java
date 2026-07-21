@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -33,14 +33,15 @@ public class ItemController {
     }
 
     @PostMapping
-    public ResponseEntity<ItemResponse> createItem(@Valid @RequestBody ItemRequest request) {
+    public ResponseEntity<ItemResponse> createItem(@Valid @RequestBody ItemRequest request,
+                                                     @AuthenticationPrincipal Long ownerId) {
         Item item = Item.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
                 .price(request.getPrice())
                 .build();
 
-        Item savedItem = itemService.createItem(item, request.getOwnerId());
+        Item savedItem = itemService.createItem(item, ownerId);
 
         ItemResponse response = ItemResponse.builder()
                 .id(savedItem.getId())
@@ -86,10 +87,11 @@ public class ItemController {
     }
 
     @PatchMapping("/{id}")
-    public ItemResponse updateItem(@PathVariable Long id, @Valid @RequestBody ItemUpdateRequest request) {
+    public ItemResponse updateItem(@PathVariable Long id, @Valid @RequestBody ItemUpdateRequest request,
+                                    @AuthenticationPrincipal Long requesterId) {
         Item item = itemService.updateItem(
                 id,
-                request.getRequesterId(),
+                requesterId,
                 request.getTitle(),
                 request.getDescription(),
                 request.getPrice());
@@ -106,7 +108,7 @@ public class ItemController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteItem(@PathVariable Long id, @RequestParam Long requesterId) {
+    public ResponseEntity<Void> deleteItem(@PathVariable Long id, @AuthenticationPrincipal Long requesterId) {
         itemService.deleteItem(id, requesterId);
         return ResponseEntity.noContent().build();
     }

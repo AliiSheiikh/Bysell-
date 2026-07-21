@@ -20,7 +20,4 @@ public class ItemRequest {
     @NotNull
     @Positive
     private BigDecimal price;
-
-    @NotNull
-    private Long ownerId;
 }

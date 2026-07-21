@@ -32,9 +32,13 @@ public class ItemImageService {
         this.itemRepository = itemRepository;
     }
 
-    public ItemImage uploadImage(Long itemId, MultipartFile file) {
+    public ItemImage uploadImage(Long itemId, MultipartFile file, Long requesterId) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item not found with id: " + itemId));
+
+        if (!item.getOwner().getId().equals(requesterId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the owner can upload images for this item");
+        }
 
         try {
             Path uploadPath = Path.of(uploadDir);

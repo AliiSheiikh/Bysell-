@@ -6,6 +6,7 @@ import com.project.Bysell.service.ItemImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,8 +30,9 @@ public class ItemImageController {
     }
 
     @PostMapping
-    public ResponseEntity<ItemImageResponse> uploadImage(@PathVariable Long itemId, @RequestParam("file") MultipartFile file) {
-        ItemImage image = itemImageService.uploadImage(itemId, file);
+    public ResponseEntity<ItemImageResponse> uploadImage(@PathVariable Long itemId, @RequestParam("file") MultipartFile file,
+                                                           @AuthenticationPrincipal Long requesterId) {
+        ItemImage image = itemImageService.uploadImage(itemId, file, requesterId);
 
         ItemImageResponse response = ItemImageResponse.builder()
                 .id(image.getId())
@@ -53,7 +55,8 @@ public class ItemImageController {
     }
 
     @DeleteMapping("/{imageId}")
-    public ResponseEntity<Void> deleteImage(@PathVariable Long itemId, @PathVariable Long imageId, @RequestParam Long requesterId) {
+    public ResponseEntity<Void> deleteImage(@PathVariable Long itemId, @PathVariable Long imageId,
+                                             @AuthenticationPrincipal Long requesterId) {
         itemImageService.deleteImage(itemId, imageId, requesterId);
         return ResponseEntity.noContent().build();
     }
