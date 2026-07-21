@@ -18,9 +18,11 @@ function NavBar() {
   return (
     <nav className="nav">
       <Link to="/">All Products</Link>
-      <Link to="/create">Create Item</Link>
       {isLoggedIn() ? (
-        <button onClick={handleLogout}>Log Out</button>
+        <>
+          <Link to="/create">Create Item</Link>
+          <button onClick={handleLogout}>Log Out</button>
+        </>
       ) : (
         <>
           <Link to="/login">Login</Link>
