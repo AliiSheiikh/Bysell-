@@ -10,6 +10,10 @@ export const CATEGORIES = [
 
 export type Category = (typeof CATEGORIES)[number]
 
+export function formatLabel(value: string): string {
+  return value.charAt(0) + value.slice(1).toLowerCase()
+}
+
 export interface Item {
   id: number
   title: string

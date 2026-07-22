@@ -96,62 +96,74 @@ export default function ProfilePage() {
 
   return (
     <div>
-      <h1>My Profile</h1>
+      <div className="profile-columns">
+        <div>
+          <h1>My Profile</h1>
 
-      <form onSubmit={handleSubmit} className="create-item-form">
-        <label>
-          First name
-          <input value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
-        </label>
+          <div className="form-card">
+            <form onSubmit={handleSubmit} className="create-item-form">
+              <label>
+                First name
+                <input value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
+              </label>
 
-        <label>
-          Last name
-          <input value={lastName} onChange={(e) => setLastName(e.target.value)} required />
-        </label>
+              <label>
+                Last name
+                <input value={lastName} onChange={(e) => setLastName(e.target.value)} required />
+              </label>
 
-        <label>
-          Email
-          <input type="email" value={profile?.email ?? ''} disabled />
-        </label>
+              <label>
+                Email
+                <input type="email" value={profile?.email ?? ''} disabled />
+              </label>
 
-        <label>
-          Phone number
-          <input value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
-        </label>
+              <label>
+                Phone number
+                <input value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
+              </label>
 
-        <button type="submit">Save Changes</button>
-        {success && <p className="success">{success}</p>}
-        {error && <p className="error">{error}</p>}
-      </form>
+              <button type="submit">Save Changes</button>
+              {success && <p className="success">{success}</p>}
+              {error && <p className="error">{error}</p>}
+            </form>
+          </div>
+        </div>
 
-      <h2>Change Password</h2>
-      <form onSubmit={handlePasswordSubmit} className="create-item-form">
-        <label>
-          Current password
-          <input type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} required />
-        </label>
+        <div>
+          <h2>Change Password</h2>
+          <div className="form-card">
+            <form onSubmit={handlePasswordSubmit} className="create-item-form">
+              <label>
+                Current password
+                <input type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} required />
+              </label>
 
-        <label>
-          New password
-          <input type="password" value={newPassword} minLength={8}
-            onChange={(e) => setNewPassword(e.target.value)} required />
-        </label>
+              <label>
+                New password
+                <input type="password" value={newPassword} minLength={8}
+                  onChange={(e) => setNewPassword(e.target.value)} required />
+              </label>
 
-        <label>
-          Confirm new password
-          <input type="password" value={confirmPassword} minLength={8}
-            onChange={(e) => setConfirmPassword(e.target.value)} required />
-        </label>
+              <label>
+                Confirm new password
+                <input type="password" value={confirmPassword} minLength={8}
+                  onChange={(e) => setConfirmPassword(e.target.value)} required />
+              </label>
 
-        <button type="submit">Change Password</button>
-        {passwordSuccess && <p className="success">{passwordSuccess}</p>}
-        {passwordError && <p className="error">{passwordError}</p>}
-      </form>
+              <button type="submit">Change Password</button>
+              {passwordSuccess && <p className="success">{passwordSuccess}</p>}
+              {passwordError && <p className="error">{passwordError}</p>}
+            </form>
+          </div>
+        </div>
 
-      <div className="danger-zone">
-        <h2>Delete Account</h2>
-        <p>You can't delete your account while you still have listed items.</p>
-        <button className="remove-button" onClick={handleDeleteAccount}>Delete Account</button>
+        <div>
+          <h2>Delete Account</h2>
+          <div className="danger-zone">
+            <p>You can't delete your account while you still have listed items.</p>
+            <button className="remove-button" onClick={handleDeleteAccount}>Delete Account</button>
+          </div>
+        </div>
       </div>
     </div>
   )

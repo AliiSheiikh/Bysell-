@@ -2,7 +2,7 @@ import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { addItemImage, getItem, removeItemImage, updateItem } from '../api'
 import { getUserId, isLoggedIn } from '../auth'
-import { CATEGORIES, type Category, type ItemImage } from '../types'
+import { CATEGORIES, formatLabel, type Category, type ItemImage } from '../types'
 
 const MAX_IMAGES = 8
 
@@ -100,7 +100,7 @@ export default function EditItemPage() {
   }
 
   if (loading) return <p>Loading item...</p>
-  if (forbidden) return <p className="error">You don't have permission to edit this item.</p>
+  if (forbidden) return <div className="notice"><p className="error">You don't have permission to edit this item.</p></div>
 
   return (
     <div>
@@ -123,35 +123,37 @@ export default function EditItemPage() {
       )}
       {imageError && <p className="error">{imageError}</p>}
 
-      <form onSubmit={handleSubmit} className="create-item-form">
-        <label>
-          Name
-          <input value={title} onChange={(e) => setTitle(e.target.value)} required />
-        </label>
+      <div className="form-card">
+        <form onSubmit={handleSubmit} className="create-item-form">
+          <label>
+            Name
+            <input value={title} onChange={(e) => setTitle(e.target.value)} required />
+          </label>
 
-        <label>
-          Description
-          <input value={description} onChange={(e) => setDescription(e.target.value)} />
-        </label>
+          <label>
+            Description
+            <input value={description} onChange={(e) => setDescription(e.target.value)} />
+          </label>
 
-        <label>
-          Price
-          <input type="number" step="0.01" min="0" value={price}
-            onChange={(e) => setPrice(e.target.value)} required />
-        </label>
+          <label>
+            Price
+            <input type="number" step="0.01" min="0" value={price}
+              onChange={(e) => setPrice(e.target.value)} required />
+          </label>
 
-        <label>
-          Category
-          <select value={category} onChange={(e) => setCategory(e.target.value as Category)}>
-            {CATEGORIES.map((c) => (
-              <option key={c} value={c}>{c}</option>
-            ))}
-          </select>
-        </label>
+          <label>
+            Category
+            <select value={category} onChange={(e) => setCategory(e.target.value as Category)}>
+              {CATEGORIES.map((c) => (
+                <option key={c} value={c}>{formatLabel(c)}</option>
+              ))}
+            </select>
+          </label>
 
-        <button type="submit">Save Changes</button>
-        {error && <p className="error">{error}</p>}
-      </form>
+          <button type="submit">Save Changes</button>
+          {error && <p className="error">{error}</p>}
+        </form>
+      </div>
     </div>
   )
 }

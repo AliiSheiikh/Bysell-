@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { deleteItem, getMyItems } from '../api'
 import { isLoggedIn } from '../auth'
-import type { Item } from '../types'
+import { formatLabel, type Item } from '../types'
 
 export default function MyListingsPage() {
   const [items, setItems] = useState<Item[]>([])
@@ -60,10 +60,10 @@ export default function MyListingsPage() {
             {item.mainImageUrl && <img className="item-thumbnail" src={item.mainImageUrl} alt={item.title} />}
             <h2>{item.title}</h2>
             <p className="price">${item.price}</p>
-            {item.category && <p className="category">{item.category}</p>}
-            <p className="status">{item.status}</p>
+            {item.category && <p className="category">{formatLabel(item.category)}</p>}
+            <p className="status">{formatLabel(item.status)}</p>
             <div className="item-actions">
-              <Link to={`/items/${item.id}/edit`}>Edit</Link>
+              <Link to={`/items/${item.id}/edit`} className="link-button">Edit</Link>
               <button className="remove-button" onClick={() => handleDelete(item.id)}>Remove Listing</button>
             </div>
           </div>

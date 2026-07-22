@@ -21,20 +21,23 @@ function NavBar() {
 
   return (
     <nav className="nav">
-      <Link to="/">All Products</Link>
-      {isLoggedIn() ? (
-        <>
-          <Link to="/create">Create Item</Link>
-          <Link to="/my-listings">My Listings</Link>
-          <Link to="/profile">My Profile</Link>
-          <button onClick={handleLogout}>Log Out</button>
-        </>
-      ) : (
-        <>
-          <Link to="/login">Login</Link>
-          <Link to="/register">Register</Link>
-        </>
-      )}
+      <Link to="/" className="brand">Bysell</Link>
+      <div className="nav-links">
+        <Link to="/">All Products</Link>
+        {isLoggedIn() ? (
+          <>
+            <Link to="/create">Create Item</Link>
+            <Link to="/my-listings">My Listings</Link>
+            <Link to="/profile">My Profile</Link>
+            <button onClick={handleLogout}>Log Out</button>
+          </>
+        ) : (
+          <>
+            <Link to="/login">Login</Link>
+            <Link to="/register">Register</Link>
+          </>
+        )}
+      </div>
     </nav>
   )
 }

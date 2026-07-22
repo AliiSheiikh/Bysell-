@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { getItem } from '../api'
 import { getUserId, isLoggedIn } from '../auth'
-import type { ItemDetail } from '../types'
+import { formatLabel, type ItemDetail } from '../types'
 
 export default function ItemDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -27,9 +27,9 @@ export default function ItemDetailPage() {
 
   if (!isLoggedIn()) {
     return (
-      <div>
+      <div className="notice">
         <p>Please log in to view item details.</p>
-        <Link to="/login">Log In</Link>
+        <Link to="/login" className="link-button">Log In</Link>
       </div>
     )
   }
@@ -41,7 +41,7 @@ export default function ItemDetailPage() {
   return (
     <div className="item-detail">
       <h1>{item.title}</h1>
-      {item.ownerId === getUserId() && <Link to={`/items/${item.id}/edit`}>Edit Listing</Link>}
+      {item.ownerId === getUserId() && <Link to={`/items/${item.id}/edit`} className="link-button">Edit Listing</Link>}
 
       <div className="item-detail-images">
         {item.images.map((image) => (
@@ -50,8 +50,8 @@ export default function ItemDetailPage() {
       </div>
 
       <p className="price">${item.price}</p>
-      {item.category && <p className="category">{item.category}</p>}
-      <p>Status: {item.status}</p>
+      {item.category && <p className="category">{formatLabel(item.category)}</p>}
+      <p>Status: {formatLabel(item.status)}</p>
       <p>{item.description}</p>
 
       <div className="seller-info">

@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { getItems, type SortBy } from '../api'
-import { CATEGORIES, type Category, type Item } from '../types'
+import { CATEGORIES, formatLabel, type Category, type Item } from '../types'
 
 export default function ProductsPage() {
   const [items, setItems] = useState<Item[]>([])
@@ -49,7 +49,7 @@ export default function ProductsPage() {
 
   return (
     <div>
-      <h1>Bysell — Available Items</h1>
+      <h1>Available Items</h1>
 
       <form onSubmit={handleSearch} className="search-form">
         <input placeholder="Search by name..." value={keyword} onChange={(e) => setKeyword(e.target.value)} />
@@ -57,7 +57,7 @@ export default function ProductsPage() {
         <select value={category} onChange={(e) => setCategory(e.target.value as Category | '')}>
           <option value="">All categories</option>
           {CATEGORIES.map((c) => (
-            <option key={c} value={c}>{c}</option>
+            <option key={c} value={c}>{formatLabel(c)}</option>
           ))}
         </select>
 
@@ -86,9 +86,9 @@ export default function ProductsPage() {
           <Link to={`/items/${item.id}`} className="item-card" key={item.id}>
             {item.mainImageUrl && <img className="item-thumbnail" src={item.mainImageUrl} alt={item.title} />}
             <h2>{item.title}</h2>
-            <p>{item.description}</p>
+            <p className="item-description">{item.description}</p>
             <p className="price">${item.price}</p>
-            {item.category && <p className="category">{item.category}</p>}
+            {item.category && <p className="category">{formatLabel(item.category)}</p>}
           </Link>
         ))}
       </div>

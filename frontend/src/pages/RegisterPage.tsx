@@ -25,31 +25,33 @@ export default function RegisterPage() {
   return (
     <div>
       <h1>Register</h1>
-      <form onSubmit={handleSubmit} className="create-item-form">
-        <label>
-          First name
-          <input value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
-        </label>
+      <div className="form-card">
+        <form onSubmit={handleSubmit} className="create-item-form">
+          <label>
+            First name
+            <input value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
+          </label>
 
-        <label>
-          Last name
-          <input value={lastName} onChange={(e) => setLastName(e.target.value)} required />
-        </label>
+          <label>
+            Last name
+            <input value={lastName} onChange={(e) => setLastName(e.target.value)} required />
+          </label>
 
-        <label>
-          Email
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        </label>
+          <label>
+            Email
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          </label>
 
-        <label>
-          Password
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
-            minLength={8} required />
-        </label>
+          <label>
+            Password
+            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
+              minLength={8} required />
+          </label>
 
-        <button type="submit">Register</button>
-        {error && <p className="error">{error}</p>}
-      </form>
+          <button type="submit">Register</button>
+          {error && <p className="error">{error}</p>}
+        </form>
+      </div>
     </div>
   )
 }
