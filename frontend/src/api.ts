@@ -3,10 +3,22 @@ import type { Category, Item, ItemDetail, ItemImage, LoginResponse, PagedRespons
 
 const BASE = '/api'
 
+async function extractErrorMessage(response: Response): Promise<string> {
+  const body = await response.text()
+  try {
+    const parsed = JSON.parse(body)
+    if (parsed && typeof parsed.message === 'string' && parsed.message.length > 0) {
+      return parsed.message
+    }
+  } catch {
+    // not JSON, fall through to raw body
+  }
+  return body || `${response.status} ${response.statusText}`
+}
+
 async function handle<T>(response: Response): Promise<T> {
   if (!response.ok) {
-    const body = await response.text()
-    throw new Error(`${response.status} ${response.statusText}: ${body}`)
+    throw new Error(await extractErrorMessage(response))
   }
   return response.json()
 }
@@ -58,8 +70,7 @@ export function deleteItem(id: number): Promise<void> {
     headers: authHeaders(),
   }).then(async (response) => {
     if (!response.ok) {
-      const body = await response.text()
-      throw new Error(`${response.status} ${response.statusText}: ${body}`)
+      throw new Error(await extractErrorMessage(response))
     }
   })
 }
@@ -103,8 +114,7 @@ export function removeItemImage(itemId: number, imageId: number): Promise<void> 
     headers: authHeaders(),
   }).then(async (response) => {
     if (!response.ok) {
-      const body = await response.text()
-      throw new Error(`${response.status} ${response.statusText}: ${body}`)
+      throw new Error(await extractErrorMessage(response))
     }
   })
 }
@@ -159,8 +169,7 @@ export function changePassword(id: number, currentPassword: string, newPassword:
     body: JSON.stringify({ currentPassword, newPassword }),
   }).then(async (response) => {
     if (!response.ok) {
-      const body = await response.text()
-      throw new Error(`${response.status} ${response.statusText}: ${body}`)
+      throw new Error(await extractErrorMessage(response))
     }
   })
 }
@@ -171,8 +180,7 @@ export function deleteUser(id: number): Promise<void> {
     headers: authHeaders(),
   }).then(async (response) => {
     if (!response.ok) {
-      const body = await response.text()
-      throw new Error(`${response.status} ${response.statusText}: ${body}`)
+      throw new Error(await extractErrorMessage(response))
     }
   })
 }

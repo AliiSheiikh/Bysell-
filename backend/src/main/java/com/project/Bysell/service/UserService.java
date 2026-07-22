@@ -15,12 +15,15 @@ public class UserService {
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
     private final PasswordEncoder passwordEncoder;
+    private final LoginRateLimiter loginRateLimiter;
 
     @Autowired
-    public UserService(UserRepository userRepository, ItemRepository itemRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, ItemRepository itemRepository, PasswordEncoder passwordEncoder,
+                        LoginRateLimiter loginRateLimiter) {
         this.userRepository = userRepository;
         this.itemRepository = itemRepository;
         this.passwordEncoder = passwordEncoder;
+        this.loginRateLimiter = loginRateLimiter;
     }
 
     public User createUser(User user, String rawPassword) {
@@ -77,13 +80,20 @@ public class UserService {
     }
 
     public User login(String email, String rawPassword) {
+        loginRateLimiter.checkAllowed(email);
+
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email or password"));
+                .orElseThrow(() -> {
+                    loginRateLimiter.recordFailure(email);
+                    return new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email or password");
+                });
 
         if (!passwordEncoder.matches(rawPassword, user.getPasswordHash())) {
+            loginRateLimiter.recordFailure(email);
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email or password");
         }
 
+        loginRateLimiter.recordSuccess(email);
         return user;
     }
 }
