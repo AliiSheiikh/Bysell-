@@ -55,7 +55,7 @@ export function getItems(filters: ItemFilters = {}): Promise<PagedResponse<Item>
 }
 
 export function getItem(id: number): Promise<ItemDetail> {
-  return fetch(`${BASE}/items/${id}`).then((response) => handle<ItemDetail>(response))
+  return fetch(`${BASE}/items/${id}`, { headers: authHeaders() }).then((response) => handle<ItemDetail>(response))
 }
 
 export function getMyItems(page = 0, size = 20): Promise<PagedResponse<Item>> {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { getItem } from '../api'
-import { getUserId } from '../auth'
+import { getUserId, isLoggedIn } from '../auth'
 import type { ItemDetail } from '../types'
 
 export default function ItemDetailPage() {
@@ -11,7 +11,10 @@ export default function ItemDetailPage() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!id) return
+    if (!id || !isLoggedIn()) {
+      setLoading(false)
+      return
+    }
 
     setLoading(true)
     setError(null)
@@ -21,6 +24,15 @@ export default function ItemDetailPage() {
       .catch((err: Error) => setError(err.message))
       .finally(() => setLoading(false))
   }, [id])
+
+  if (!isLoggedIn()) {
+    return (
+      <div>
+        <p>Please log in to view item details.</p>
+        <Link to="/login">Log In</Link>
+      </div>
+    )
+  }
 
   if (loading) return <p>Loading item...</p>
   if (error) return <p className="error">Error: {error}</p>
