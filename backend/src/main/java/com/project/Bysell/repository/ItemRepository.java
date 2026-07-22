@@ -14,6 +14,8 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     List<Item> findByStatus(ItemStatus status);
 
+    List<Item> findByOwnerId(Long ownerId);
+
     boolean existsByOwnerId(Long ownerId);
 
     @Query("SELECT i FROM Item i WHERE i.status = 'AVAILABLE' "

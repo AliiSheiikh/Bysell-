@@ -38,6 +38,22 @@ export function getItem(id: number): Promise<ItemDetail> {
   return fetch(`${BASE}/items/${id}`).then((response) => handle<ItemDetail>(response))
 }
 
+export function getMyItems(): Promise<Item[]> {
+  return fetch(`${BASE}/items/mine`, { headers: authHeaders() }).then((response) => handle<Item[]>(response))
+}
+
+export function deleteItem(id: number): Promise<void> {
+  return fetch(`${BASE}/items/${id}`, {
+    method: 'DELETE',
+    headers: authHeaders(),
+  }).then(async (response) => {
+    if (!response.ok) {
+      const body = await response.text()
+      throw new Error(`${response.status} ${response.statusText}: ${body}`)
+    }
+  })
+}
+
 interface CreateItemData {
   title: string
   description: string | null

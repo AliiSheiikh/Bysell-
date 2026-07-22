@@ -91,6 +91,23 @@ public class ItemController {
                 .toList();
     }
 
+    @GetMapping("/mine")
+    public List<ItemResponse> getMyItems(@AuthenticationPrincipal Long ownerId) {
+        return itemService.getItemsByOwner(ownerId).stream()
+                .map(item -> ItemResponse.builder()
+                        .id(item.getId())
+                        .title(item.getTitle())
+                        .description(item.getDescription())
+                        .price(item.getPrice())
+                        .status(item.getStatus())
+                        .category(item.getCategory())
+                        .mainImageUrl(itemImageService.getMainImageUrl(item.getId()))
+                        .ownerId(item.getOwner().getId())
+                        .createdAt(item.getCreatedAt())
+                        .build())
+                .toList();
+    }
+
     @GetMapping("/{id}")
     public ItemDetailResponse getItem(@PathVariable Long id) {
         Item item = itemService.getItemById(id);

@@ -57,6 +57,10 @@ public class ItemService {
         return itemRepository.search(keyword, category, minPrice, maxPrice);
     }
 
+    public List<Item> getItemsByOwner(Long ownerId) {
+        return itemRepository.findByOwnerId(ownerId);
+    }
+
     public Item getItemById(Long id) {
         return itemRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item not found with id: " + id));
