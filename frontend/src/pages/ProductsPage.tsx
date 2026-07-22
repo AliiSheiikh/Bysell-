@@ -13,7 +13,10 @@ export default function ProductsPage() {
   const [minPrice, setMinPrice] = useState<string>('')
   const [maxPrice, setMaxPrice] = useState<string>('')
 
-  function loadItems() {
+  const [page, setPage] = useState<number>(0)
+  const [totalPages, setTotalPages] = useState<number>(0)
+
+  function loadItems(pageToLoad: number) {
     setLoading(true)
     setError(null)
 
@@ -22,19 +25,24 @@ export default function ProductsPage() {
       category: category || undefined,
       minPrice: minPrice ? Number(minPrice) : undefined,
       maxPrice: maxPrice ? Number(maxPrice) : undefined,
+      page: pageToLoad,
     })
-      .then((data) => setItems(data))
+      .then((data) => {
+        setItems(data.content)
+        setPage(data.page)
+        setTotalPages(data.totalPages)
+      })
       .catch((err: Error) => setError(err.message))
       .finally(() => setLoading(false))
   }
 
   useEffect(() => {
-    loadItems()
+    loadItems(0)
   }, [])
 
   function handleSearch(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    loadItems()
+    loadItems(0)
   }
 
   return (
@@ -71,6 +79,14 @@ export default function ProductsPage() {
           </Link>
         ))}
       </div>
+
+      {totalPages > 1 && (
+        <div className="pagination">
+          <button type="button" disabled={page === 0} onClick={() => loadItems(page - 1)}>Previous</button>
+          <span>Page {page + 1} of {totalPages}</span>
+          <button type="button" disabled={page >= totalPages - 1} onClick={() => loadItems(page + 1)}>Next</button>
+        </div>
+      )}
     </div>
   )
 }

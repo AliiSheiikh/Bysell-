@@ -8,6 +8,8 @@ export default function MyListingsPage() {
   const [items, setItems] = useState<Item[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
+  const [page, setPage] = useState<number>(0)
+  const [totalPages, setTotalPages] = useState<number>(0)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -15,15 +17,19 @@ export default function MyListingsPage() {
       navigate('/login')
       return
     }
-    loadItems()
+    loadItems(0)
   }, [navigate])
 
-  function loadItems() {
+  function loadItems(pageToLoad: number) {
     setLoading(true)
     setError(null)
 
-    getMyItems()
-      .then((data) => setItems(data))
+    getMyItems(pageToLoad)
+      .then((data) => {
+        setItems(data.content)
+        setPage(data.page)
+        setTotalPages(data.totalPages)
+      })
       .catch((err: Error) => setError(err.message))
       .finally(() => setLoading(false))
   }
@@ -33,7 +39,8 @@ export default function MyListingsPage() {
 
     try {
       await deleteItem(id)
-      setItems((prev) => prev.filter((item) => item.id !== id))
+      const isLastItemOnPage = items.length === 1 && page > 0
+      loadItems(isLastItemOnPage ? page - 1 : page)
     } catch (err) {
       setError((err as Error).message)
     }
@@ -62,6 +69,14 @@ export default function MyListingsPage() {
           </div>
         ))}
       </div>
+
+      {totalPages > 1 && (
+        <div className="pagination">
+          <button type="button" disabled={page === 0} onClick={() => loadItems(page - 1)}>Previous</button>
+          <span>Page {page + 1} of {totalPages}</span>
+          <button type="button" disabled={page >= totalPages - 1} onClick={() => loadItems(page + 1)}>Next</button>
+        </div>
+      )}
     </div>
   )
 }

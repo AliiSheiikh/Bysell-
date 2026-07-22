@@ -7,6 +7,8 @@ import com.project.Bysell.model.User;
 import com.project.Bysell.repository.ItemRepository;
 import com.project.Bysell.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,12 +55,12 @@ public class ItemService {
         return savedItem;
     }
 
-    public List<Item> searchItems(String keyword, ItemCategory category, BigDecimal minPrice, BigDecimal maxPrice) {
-        return itemRepository.search(keyword, category, minPrice, maxPrice);
+    public Page<Item> searchItems(String keyword, ItemCategory category, BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable) {
+        return itemRepository.search(keyword, category, minPrice, maxPrice, pageable);
     }
 
-    public List<Item> getItemsByOwner(Long ownerId) {
-        return itemRepository.findByOwnerId(ownerId);
+    public Page<Item> getItemsByOwner(Long ownerId, Pageable pageable) {
+        return itemRepository.findByOwnerId(ownerId, pageable);
     }
 
     public Item getItemById(Long id) {

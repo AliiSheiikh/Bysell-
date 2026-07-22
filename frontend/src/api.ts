@@ -1,5 +1,5 @@
 import { getToken } from './auth'
-import type { Category, Item, ItemDetail, ItemImage, LoginResponse, UserProfile } from './types'
+import type { Category, Item, ItemDetail, ItemImage, LoginResponse, PagedResponse, UserProfile } from './types'
 
 const BASE = '/api'
 
@@ -21,25 +21,31 @@ export interface ItemFilters {
   category?: Category
   minPrice?: number
   maxPrice?: number
+  page?: number
+  size?: number
 }
 
-export function getItems(filters: ItemFilters = {}): Promise<Item[]> {
+export function getItems(filters: ItemFilters = {}): Promise<PagedResponse<Item>> {
   const params = new URLSearchParams()
   if (filters.keyword) params.set('keyword', filters.keyword)
   if (filters.category) params.set('category', filters.category)
   if (filters.minPrice !== undefined) params.set('minPrice', String(filters.minPrice))
   if (filters.maxPrice !== undefined) params.set('maxPrice', String(filters.maxPrice))
+  if (filters.page !== undefined) params.set('page', String(filters.page))
+  if (filters.size !== undefined) params.set('size', String(filters.size))
 
   const query = params.toString()
-  return fetch(`${BASE}/items${query ? `?${query}` : ''}`).then((response) => handle<Item[]>(response))
+  return fetch(`${BASE}/items${query ? `?${query}` : ''}`).then((response) => handle<PagedResponse<Item>>(response))
 }
 
 export function getItem(id: number): Promise<ItemDetail> {
   return fetch(`${BASE}/items/${id}`).then((response) => handle<ItemDetail>(response))
 }
 
-export function getMyItems(): Promise<Item[]> {
-  return fetch(`${BASE}/items/mine`, { headers: authHeaders() }).then((response) => handle<Item[]>(response))
+export function getMyItems(page = 0, size = 20): Promise<PagedResponse<Item>> {
+  const params = new URLSearchParams({ page: String(page), size: String(size) })
+  return fetch(`${BASE}/items/mine?${params.toString()}`, { headers: authHeaders() })
+    .then((response) => handle<PagedResponse<Item>>(response))
 }
 
 export function deleteItem(id: number): Promise<void> {

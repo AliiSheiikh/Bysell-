@@ -5,6 +5,7 @@ import com.project.Bysell.dto.ItemImageResponse;
 import com.project.Bysell.dto.ItemRequest;
 import com.project.Bysell.dto.ItemResponse;
 import com.project.Bysell.dto.ItemUpdateRequest;
+import com.project.Bysell.dto.PagedResponse;
 import com.project.Bysell.model.Item;
 import com.project.Bysell.model.ItemCategory;
 import com.project.Bysell.model.User;
@@ -12,6 +13,8 @@ import com.project.Bysell.service.ItemImageService;
 import com.project.Bysell.service.ItemService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +37,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/items")
 public class ItemController {
+
+    private static final int MAX_PAGE_SIZE = 100;
 
     private final ItemService itemService;
     private final ItemImageService itemImageService;
@@ -73,11 +78,16 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemResponse> searchItems(@RequestParam(required = false) String keyword,
-                                           @RequestParam(required = false) ItemCategory category,
-                                           @RequestParam(required = false) BigDecimal minPrice,
-                                           @RequestParam(required = false) BigDecimal maxPrice) {
-        return itemService.searchItems(keyword, category, minPrice, maxPrice).stream()
+    public PagedResponse<ItemResponse> searchItems(@RequestParam(required = false) String keyword,
+                                                     @RequestParam(required = false) ItemCategory category,
+                                                     @RequestParam(required = false) BigDecimal minPrice,
+                                                     @RequestParam(required = false) BigDecimal maxPrice,
+                                                     @RequestParam(defaultValue = "0") int page,
+                                                     @RequestParam(defaultValue = "20") int size) {
+        Page<Item> result = itemService.searchItems(keyword, category, minPrice, maxPrice,
+                PageRequest.of(page, Math.min(size, MAX_PAGE_SIZE)));
+
+        List<ItemResponse> content = result.getContent().stream()
                 .map(item -> ItemResponse.builder()
                         .id(item.getId())
                         .title(item.getTitle())
@@ -90,11 +100,23 @@ public class ItemController {
                         .createdAt(item.getCreatedAt())
                         .build())
                 .toList();
+
+        return PagedResponse.<ItemResponse>builder()
+                .content(content)
+                .page(result.getNumber())
+                .size(result.getSize())
+                .totalElements(result.getTotalElements())
+                .totalPages(result.getTotalPages())
+                .build();
     }
 
     @GetMapping("/mine")
-    public List<ItemResponse> getMyItems(@AuthenticationPrincipal Long ownerId) {
-        return itemService.getItemsByOwner(ownerId).stream()
+    public PagedResponse<ItemResponse> getMyItems(@AuthenticationPrincipal Long ownerId,
+                                                    @RequestParam(defaultValue = "0") int page,
+                                                    @RequestParam(defaultValue = "20") int size) {
+        Page<Item> result = itemService.getItemsByOwner(ownerId, PageRequest.of(page, Math.min(size, MAX_PAGE_SIZE)));
+
+        List<ItemResponse> content = result.getContent().stream()
                 .map(item -> ItemResponse.builder()
                         .id(item.getId())
                         .title(item.getTitle())
@@ -107,6 +129,14 @@ public class ItemController {
                         .createdAt(item.getCreatedAt())
                         .build())
                 .toList();
+
+        return PagedResponse.<ItemResponse>builder()
+                .content(content)
+                .page(result.getNumber())
+                .size(result.getSize())
+                .totalElements(result.getTotalElements())
+                .totalPages(result.getTotalPages())
+                .build();
     }
 
     @GetMapping("/{id}")

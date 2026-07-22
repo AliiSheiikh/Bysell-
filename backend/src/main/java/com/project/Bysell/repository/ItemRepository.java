@@ -3,6 +3,8 @@ package com.project.Bysell.repository;
 import com.project.Bysell.model.Item;
 import com.project.Bysell.model.ItemCategory;
 import com.project.Bysell.model.ItemStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,7 +16,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     List<Item> findByStatus(ItemStatus status);
 
-    List<Item> findByOwnerId(Long ownerId);
+    Page<Item> findByOwnerId(Long ownerId, Pageable pageable);
 
     boolean existsByOwnerId(Long ownerId);
 
@@ -23,8 +25,9 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             + "AND (:category IS NULL OR i.category = :category) "
             + "AND (:minPrice IS NULL OR i.price >= :minPrice) "
             + "AND (:maxPrice IS NULL OR i.price <= :maxPrice)")
-    List<Item> search(@Param("keyword") String keyword,
+    Page<Item> search(@Param("keyword") String keyword,
                        @Param("category") ItemCategory category,
                        @Param("minPrice") BigDecimal minPrice,
-                       @Param("maxPrice") BigDecimal maxPrice);
+                       @Param("maxPrice") BigDecimal maxPrice,
+                       Pageable pageable);
 }
