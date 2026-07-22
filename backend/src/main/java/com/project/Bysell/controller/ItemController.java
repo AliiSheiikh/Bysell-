@@ -1,6 +1,7 @@
 package com.project.Bysell.controller;
 
 import com.project.Bysell.dto.ItemDetailResponse;
+import com.project.Bysell.dto.ItemImageResponse;
 import com.project.Bysell.dto.ItemRequest;
 import com.project.Bysell.dto.ItemResponse;
 import com.project.Bysell.dto.ItemUpdateRequest;
@@ -113,6 +114,14 @@ public class ItemController {
         Item item = itemService.getItemById(id);
         User owner = item.getOwner();
 
+        List<ItemImageResponse> images = itemImageService.getImagesForItem(id).stream()
+                .map(image -> ItemImageResponse.builder()
+                        .id(image.getId())
+                        .imageUrl(image.getImageUrl())
+                        .uploadedAt(image.getUploadedAt())
+                        .build())
+                .toList();
+
         return ItemDetailResponse.builder()
                 .id(item.getId())
                 .title(item.getTitle())
@@ -120,7 +129,7 @@ public class ItemController {
                 .price(item.getPrice())
                 .status(item.getStatus())
                 .category(item.getCategory())
-                .imageUrls(itemImageService.getImageUrlsForItem(id))
+                .images(images)
                 .ownerId(owner.getId())
                 .sellerName(owner.getFirstName() + " " + owner.getLastName())
                 .sellerEmail(owner.getEmail())

@@ -26,6 +26,8 @@ public class ItemImageService {
             "image/png", ".png",
             "image/gif", ".gif",
             "image/webp", ".webp");
+    private static final int MIN_IMAGES = 1;
+    private static final int MAX_IMAGES = 8;
 
     private final ItemImageRepository itemImageRepository;
     private final ItemRepository itemRepository;
@@ -45,6 +47,10 @@ public class ItemImageService {
 
         if (!item.getOwner().getId().equals(requesterId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the owner can upload images for this item");
+        }
+
+        if (itemImageRepository.findByItemIdOrderByIdAsc(itemId).size() >= MAX_IMAGES) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A maximum of " + MAX_IMAGES + " images is allowed");
         }
 
         return storeImage(item, file);
@@ -91,12 +97,6 @@ public class ItemImageService {
         return itemImageRepository.findByItemIdOrderByIdAsc(itemId);
     }
 
-    public List<String> getImageUrlsForItem(Long itemId) {
-        return itemImageRepository.findByItemIdOrderByIdAsc(itemId).stream()
-                .map(ItemImage::getImageUrl)
-                .toList();
-    }
-
     public String getMainImageUrl(Long itemId) {
         return itemImageRepository.findFirstByItemIdOrderByIdAsc(itemId)
                 .map(ItemImage::getImageUrl)
@@ -116,6 +116,10 @@ public class ItemImageService {
 
         if (!image.getItem().getId().equals(itemId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Image not found for this item");
+        }
+
+        if (itemImageRepository.findByItemIdOrderByIdAsc(itemId).size() <= MIN_IMAGES) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "An item must have at least one image");
         }
 
         String filename = image.getImageUrl().replace("/images/", "");

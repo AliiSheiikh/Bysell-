@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { deleteItem, getMyItems } from '../api'
 import { isLoggedIn } from '../auth'
 import type { Item } from '../types'
@@ -55,7 +55,10 @@ export default function MyListingsPage() {
             <p className="price">${item.price}</p>
             {item.category && <p className="category">{item.category}</p>}
             <p className="status">{item.status}</p>
-            <button className="remove-button" onClick={() => handleDelete(item.id)}>Remove Listing</button>
+            <div className="item-actions">
+              <Link to={`/items/${item.id}/edit`}>Edit</Link>
+              <button className="remove-button" onClick={() => handleDelete(item.id)}>Remove Listing</button>
+            </div>
           </div>
         ))}
       </div>

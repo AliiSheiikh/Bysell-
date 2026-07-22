@@ -1,5 +1,5 @@
 import { getToken } from './auth'
-import type { Category, Item, ItemDetail, LoginResponse } from './types'
+import type { Category, Item, ItemDetail, ItemImage, LoginResponse } from './types'
 
 const BASE = '/api'
 
@@ -59,6 +59,44 @@ interface CreateItemData {
   description: string | null
   price: number
   category: Category
+}
+
+interface UpdateItemData {
+  title: string
+  description: string | null
+  price: number
+  category: Category
+}
+
+export function updateItem(id: number, data: UpdateItemData): Promise<Item> {
+  return fetch(`${BASE}/items/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    body: JSON.stringify(data),
+  }).then((response) => handle<Item>(response))
+}
+
+export function addItemImage(itemId: number, image: File): Promise<ItemImage> {
+  const formData = new FormData()
+  formData.append('file', image)
+
+  return fetch(`${BASE}/items/${itemId}/images`, {
+    method: 'POST',
+    headers: authHeaders(),
+    body: formData,
+  }).then((response) => handle<ItemImage>(response))
+}
+
+export function removeItemImage(itemId: number, imageId: number): Promise<void> {
+  return fetch(`${BASE}/items/${itemId}/images/${imageId}`, {
+    method: 'DELETE',
+    headers: authHeaders(),
+  }).then(async (response) => {
+    if (!response.ok) {
+      const body = await response.text()
+      throw new Error(`${response.status} ${response.statusText}: ${body}`)
+    }
+  })
 }
 
 export function createItem(data: CreateItemData, images: File[]): Promise<Item> {

@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { login } from '../api'
-import { saveToken } from '../auth'
+import { saveToken, saveUserId } from '../auth'
 
 export default function LoginPage() {
   const [email, setEmail] = useState<string>('')
@@ -16,6 +16,7 @@ export default function LoginPage() {
     try {
       const response = await login({ email, password })
       saveToken(response.token)
+      saveUserId(response.userId)
       navigate('/')
     } catch (err) {
       setError((err as Error).message)

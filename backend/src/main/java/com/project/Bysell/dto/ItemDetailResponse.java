@@ -21,7 +21,7 @@ public class ItemDetailResponse {
     private BigDecimal price;
     private ItemStatus status;
     private ItemCategory category;
-    private List<String> imageUrls;
+    private List<ItemImageResponse> images;
     private Long ownerId;
     private String sellerName;
     private String sellerEmail;

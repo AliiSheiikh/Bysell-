@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Link, useLocation, useNavigate } from 're
 import ProductsPage from './pages/ProductsPage'
 import CreateItemPage from './pages/CreateItemPage'
 import ItemDetailPage from './pages/ItemDetailPage'
+import EditItemPage from './pages/EditItemPage'
 import MyListingsPage from './pages/MyListingsPage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
@@ -46,6 +47,7 @@ function App() {
           <Route path="/" element={<ProductsPage />} />
           <Route path="/create" element={<CreateItemPage />} />
           <Route path="/items/:id" element={<ItemDetailPage />} />
+          <Route path="/items/:id/edit" element={<EditItemPage />} />
           <Route path="/my-listings" element={<MyListingsPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />

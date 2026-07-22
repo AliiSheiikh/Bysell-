@@ -109,7 +109,19 @@
 }
 
 .remove-button {
-  margin-top: 8px;
   color: #c0392b;
   border-color: #c0392b;
+}
+
+.item-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.editable-image {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }

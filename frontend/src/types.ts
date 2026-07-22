@@ -22,6 +22,11 @@ export interface Item {
   createdAt: string
 }
 
+export interface ItemImage {
+  id: number
+  imageUrl: string
+}
+
 export interface ItemDetail {
   id: number
   title: string
@@ -29,7 +34,7 @@ export interface ItemDetail {
   price: number
   status: string
   category: Category | null
-  imageUrls: string[]
+  images: ItemImage[]
   ownerId: number
   sellerName: string
   sellerEmail: string

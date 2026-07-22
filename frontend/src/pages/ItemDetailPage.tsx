@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { getItem } from '../api'
+import { getUserId } from '../auth'
 import type { ItemDetail } from '../types'
 
 export default function ItemDetailPage() {
@@ -28,10 +29,11 @@ export default function ItemDetailPage() {
   return (
     <div className="item-detail">
       <h1>{item.title}</h1>
+      {item.ownerId === getUserId() && <Link to={`/items/${item.id}/edit`}>Edit Listing</Link>}
 
       <div className="item-detail-images">
-        {item.imageUrls.map((url) => (
-          <img key={url} src={url} alt={item.title} className="item-detail-image" />
+        {item.images.map((image) => (
+          <img key={image.id} src={image.imageUrl} alt={item.title} className="item-detail-image" />
         ))}
       </div>
 
