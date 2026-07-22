@@ -1,6 +1,5 @@
 package com.project.Bysell.dto;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,10 +13,6 @@ public class UserUpdateRequest {
 
     @NotBlank
     private String lastName;
-
-    @NotBlank
-    @Email
-    private String email;
 
     private String phoneNumber;
 }

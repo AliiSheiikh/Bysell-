@@ -61,7 +61,6 @@ public class UserController {
                 requesterId,
                 request.getFirstName(),
                 request.getLastName(),
-                request.getEmail(),
                 request.getPhoneNumber());
 
         return UserResponse.builder()

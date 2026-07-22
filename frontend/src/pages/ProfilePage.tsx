@@ -10,7 +10,6 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [firstName, setFirstName] = useState<string>('')
   const [lastName, setLastName] = useState<string>('')
-  const [email, setEmail] = useState<string>('')
   const [phoneNumber, setPhoneNumber] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
@@ -33,7 +32,6 @@ export default function ProfilePage() {
         setProfile(data)
         setFirstName(data.firstName)
         setLastName(data.lastName)
-        setEmail(data.email)
         setPhoneNumber(data.phoneNumber ?? '')
       })
       .catch((err: Error) => setError(err.message))
@@ -50,7 +48,6 @@ export default function ProfilePage() {
       const updated = await updateUser(profile.id, {
         firstName,
         lastName,
-        email,
         phoneNumber: phoneNumber || null,
       })
       setProfile(updated)
@@ -114,7 +111,7 @@ export default function ProfilePage() {
 
         <label>
           Email
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          <input type="email" value={profile?.email ?? ''} disabled />
         </label>
 
         <label>

@@ -131,7 +131,6 @@ export function getMe(): Promise<UserProfile> {
 interface UpdateUserData {
   firstName: string
   lastName: string
-  email: string
   phoneNumber: string | null
 }
 

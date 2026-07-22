@@ -33,7 +33,7 @@ public class UserService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with id: " + id));
     }
 
-    public User updateUser(Long id, Long requesterId, String firstName, String lastName, String email, String phoneNumber) {
+    public User updateUser(Long id, Long requesterId, String firstName, String lastName, String phoneNumber) {
         User user = getUserById(id);
 
         if (!id.equals(requesterId)) {
@@ -42,7 +42,6 @@ public class UserService {
 
         user.setFirstName(firstName);
         user.setLastName(lastName);
-        user.setEmail(email);
         user.setPhoneNumber(phoneNumber);
 
         return userRepository.save(user);
