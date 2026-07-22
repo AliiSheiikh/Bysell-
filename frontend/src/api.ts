@@ -16,11 +16,14 @@ function authHeaders(): Record<string, string> {
   return token ? { Authorization: `Bearer ${token}` } : {}
 }
 
+export type SortBy = 'newest' | 'oldest' | 'price_asc' | 'price_desc'
+
 export interface ItemFilters {
   keyword?: string
   category?: Category
   minPrice?: number
   maxPrice?: number
+  sortBy?: SortBy
   page?: number
   size?: number
 }
@@ -31,6 +34,7 @@ export function getItems(filters: ItemFilters = {}): Promise<PagedResponse<Item>
   if (filters.category) params.set('category', filters.category)
   if (filters.minPrice !== undefined) params.set('minPrice', String(filters.minPrice))
   if (filters.maxPrice !== undefined) params.set('maxPrice', String(filters.maxPrice))
+  if (filters.sortBy) params.set('sortBy', filters.sortBy)
   if (filters.page !== undefined) params.set('page', String(filters.page))
   if (filters.size !== undefined) params.set('size', String(filters.size))
 

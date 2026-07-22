@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
-import { getItems } from '../api'
+import { getItems, type SortBy } from '../api'
 import { CATEGORIES, type Category, type Item } from '../types'
 
 export default function ProductsPage() {
@@ -12,11 +12,12 @@ export default function ProductsPage() {
   const [category, setCategory] = useState<Category | ''>('')
   const [minPrice, setMinPrice] = useState<string>('')
   const [maxPrice, setMaxPrice] = useState<string>('')
+  const [sortBy, setSortBy] = useState<SortBy>('newest')
 
   const [page, setPage] = useState<number>(0)
   const [totalPages, setTotalPages] = useState<number>(0)
 
-  function loadItems(pageToLoad: number) {
+  function loadItems(pageToLoad: number, sortOverride?: SortBy) {
     setLoading(true)
     setError(null)
 
@@ -25,6 +26,7 @@ export default function ProductsPage() {
       category: category || undefined,
       minPrice: minPrice ? Number(minPrice) : undefined,
       maxPrice: maxPrice ? Number(maxPrice) : undefined,
+      sortBy: sortOverride ?? sortBy,
       page: pageToLoad,
     })
       .then((data) => {
@@ -61,6 +63,17 @@ export default function ProductsPage() {
 
         <input type="number" placeholder="Min price" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} />
         <input type="number" placeholder="Max price" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} />
+
+        <select value={sortBy} onChange={(e) => {
+          const newSort = e.target.value as SortBy
+          setSortBy(newSort)
+          loadItems(0, newSort)
+        }}>
+          <option value="newest">Newest</option>
+          <option value="oldest">Oldest</option>
+          <option value="price_asc">Price: Low to High</option>
+          <option value="price_desc">Price: High to Low</option>
+        </select>
 
         <button type="submit">Search</button>
       </form>

@@ -15,6 +15,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -82,10 +83,18 @@ public class ItemController {
                                                      @RequestParam(required = false) ItemCategory category,
                                                      @RequestParam(required = false) BigDecimal minPrice,
                                                      @RequestParam(required = false) BigDecimal maxPrice,
+                                                     @RequestParam(defaultValue = "newest") String sortBy,
                                                      @RequestParam(defaultValue = "0") int page,
                                                      @RequestParam(defaultValue = "20") int size) {
+        Sort sort = switch (sortBy) {
+            case "price_asc" -> Sort.by(Sort.Direction.ASC, "price");
+            case "price_desc" -> Sort.by(Sort.Direction.DESC, "price");
+            case "oldest" -> Sort.by(Sort.Direction.ASC, "createdAt");
+            default -> Sort.by(Sort.Direction.DESC, "createdAt");
+        };
+
         Page<Item> result = itemService.searchItems(keyword, category, minPrice, maxPrice,
-                PageRequest.of(page, Math.min(size, MAX_PAGE_SIZE)));
+                PageRequest.of(page, Math.min(size, MAX_PAGE_SIZE), sort));
 
         List<ItemResponse> content = result.getContent().stream()
                 .map(item -> ItemResponse.builder()
