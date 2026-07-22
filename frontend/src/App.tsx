@@ -4,6 +4,7 @@ import CreateItemPage from './pages/CreateItemPage'
 import ItemDetailPage from './pages/ItemDetailPage'
 import EditItemPage from './pages/EditItemPage'
 import MyListingsPage from './pages/MyListingsPage'
+import ProfilePage from './pages/ProfilePage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import { isLoggedIn, clearToken } from './auth'
@@ -25,6 +26,7 @@ function NavBar() {
         <>
           <Link to="/create">Create Item</Link>
           <Link to="/my-listings">My Listings</Link>
+          <Link to="/profile">My Profile</Link>
           <button onClick={handleLogout}>Log Out</button>
         </>
       ) : (
@@ -49,6 +51,7 @@ function App() {
           <Route path="/items/:id" element={<ItemDetailPage />} />
           <Route path="/items/:id/edit" element={<EditItemPage />} />
           <Route path="/my-listings" element={<MyListingsPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
         </Routes>

@@ -47,3 +47,12 @@ export interface LoginResponse {
   firstName: string
   email: string
 }
+
+export interface UserProfile {
+  id: number
+  firstName: string
+  lastName: string
+  email: string
+  phoneNumber: string | null
+  createdAt: string
+}

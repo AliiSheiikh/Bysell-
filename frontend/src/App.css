@@ -125,3 +125,14 @@
   flex-direction: column;
   gap: 4px;
 }
+
+.success {
+  color: #2e7d32;
+}
+
+.danger-zone {
+  margin-top: 32px;
+  padding-top: 16px;
+  border-top: 1px solid #ccc;
+  max-width: 300px;
+}

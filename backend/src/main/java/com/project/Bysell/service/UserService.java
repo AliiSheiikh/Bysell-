@@ -48,6 +48,21 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public void changePassword(Long id, Long requesterId, String currentPassword, String newPassword) {
+        User user = getUserById(id);
+
+        if (!id.equals(requesterId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only change your own password");
+        }
+
+        if (!passwordEncoder.matches(currentPassword, user.getPasswordHash())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Current password is incorrect");
+        }
+
+        user.setPasswordHash(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
+
     public void deleteUser(Long id, Long requesterId) {
         User user = getUserById(id);
 

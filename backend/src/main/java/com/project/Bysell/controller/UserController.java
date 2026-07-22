@@ -1,5 +1,6 @@
 package com.project.Bysell.controller;
 
+import com.project.Bysell.dto.ChangePasswordRequest;
 import com.project.Bysell.dto.UserRequest;
 import com.project.Bysell.dto.UserResponse;
 import com.project.Bysell.dto.UserUpdateRequest;
@@ -71,6 +72,13 @@ public class UserController {
                 .phoneNumber(user.getPhoneNumber())
                 .createdAt(user.getCreatedAt())
                 .build();
+    }
+
+    @PatchMapping("/{id}/password")
+    public ResponseEntity<Void> changePassword(@PathVariable Long id, @Valid @RequestBody ChangePasswordRequest request,
+                                                @AuthenticationPrincipal Long requesterId) {
+        userService.changePassword(id, requesterId, request.getCurrentPassword(), request.getNewPassword());
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")

@@ -1,5 +1,5 @@
 import { getToken } from './auth'
-import type { Category, Item, ItemDetail, ItemImage, LoginResponse } from './types'
+import type { Category, Item, ItemDetail, ItemImage, LoginResponse, UserProfile } from './types'
 
 const BASE = '/api'
 
@@ -122,6 +122,50 @@ export function login(data: LoginData): Promise<LoginResponse> {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
   }).then((response) => handle<LoginResponse>(response))
+}
+
+export function getMe(): Promise<UserProfile> {
+  return fetch(`${BASE}/auth/me`, { headers: authHeaders() }).then((response) => handle<UserProfile>(response))
+}
+
+interface UpdateUserData {
+  firstName: string
+  lastName: string
+  email: string
+  phoneNumber: string | null
+}
+
+export function updateUser(id: number, data: UpdateUserData): Promise<UserProfile> {
+  return fetch(`${BASE}/users/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    body: JSON.stringify(data),
+  }).then((response) => handle<UserProfile>(response))
+}
+
+export function changePassword(id: number, currentPassword: string, newPassword: string): Promise<void> {
+  return fetch(`${BASE}/users/${id}/password`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    body: JSON.stringify({ currentPassword, newPassword }),
+  }).then(async (response) => {
+    if (!response.ok) {
+      const body = await response.text()
+      throw new Error(`${response.status} ${response.statusText}: ${body}`)
+    }
+  })
+}
+
+export function deleteUser(id: number): Promise<void> {
+  return fetch(`${BASE}/users/${id}`, {
+    method: 'DELETE',
+    headers: authHeaders(),
+  }).then(async (response) => {
+    if (!response.ok) {
+      const body = await response.text()
+      throw new Error(`${response.status} ${response.statusText}: ${body}`)
+    }
+  })
 }
 
 interface RegisterData {
