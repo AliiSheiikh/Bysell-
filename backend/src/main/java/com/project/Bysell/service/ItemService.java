@@ -2,7 +2,6 @@ package com.project.Bysell.service;
 
 import com.project.Bysell.model.Item;
 import com.project.Bysell.model.ItemCategory;
-import com.project.Bysell.model.ItemStatus;
 import com.project.Bysell.model.User;
 import com.project.Bysell.repository.ItemRepository;
 import com.project.Bysell.repository.UserRepository;
