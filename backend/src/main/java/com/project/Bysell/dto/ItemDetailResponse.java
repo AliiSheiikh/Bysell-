@@ -1,7 +1,6 @@
 package com.project.Bysell.dto;
 
 import com.project.Bysell.model.ItemCategory;
-import com.project.Bysell.model.ItemStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,7 +20,6 @@ public class ItemDetailResponse {
     private String title;
     private String description;
     private BigDecimal price;
-    private ItemStatus status;
     private ItemCategory category;
     private List<ItemImageResponse> images;
     private Long ownerId;

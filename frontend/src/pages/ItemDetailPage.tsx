@@ -51,7 +51,6 @@ export default function ItemDetailPage() {
 
       <p className="price">${item.price}</p>
       {item.category && <p className="category">{formatLabel(item.category)}</p>}
-      <p>Status: {formatLabel(item.status)}</p>
       <p>{item.description}</p>
 
       <div className="seller-info">

@@ -61,7 +61,6 @@ export default function MyListingsPage() {
             <h2>{item.title}</h2>
             <p className="price">${item.price}</p>
             {item.category && <p className="category">{formatLabel(item.category)}</p>}
-            <p className="status">{formatLabel(item.status)}</p>
             <div className="item-actions">
               <Link to={`/items/${item.id}/edit`} className="link-button">Edit</Link>
               <button className="remove-button" onClick={() => handleDelete(item.id)}>Remove Listing</button>

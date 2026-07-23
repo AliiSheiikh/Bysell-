@@ -296,8 +296,7 @@ a.item-card:hover {
   font-size: 1.05rem;
 }
 
-.category,
-.status {
+.category {
   display: inline-flex;
   width: fit-content;
   align-items: center;
@@ -309,11 +308,6 @@ a.item-card:hover {
   font-weight: 600;
   text-transform: capitalize;
   margin: 0;
-}
-
-.status {
-  background: var(--color-success-tint);
-  color: var(--color-success);
 }
 
 .image-count {

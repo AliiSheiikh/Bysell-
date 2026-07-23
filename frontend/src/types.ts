@@ -19,7 +19,6 @@ export interface Item {
   title: string
   description: string | null
   price: number
-  status: string
   category: Category | null
   mainImageUrl: string | null
   ownerId: number
@@ -36,7 +35,6 @@ export interface ItemDetail {
   title: string
   description: string | null
   price: number
-  status: string
   category: Category | null
   images: ItemImage[]
   ownerId: number

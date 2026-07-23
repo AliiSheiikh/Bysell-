@@ -17,8 +17,8 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     boolean existsByOwnerId(Long ownerId);
 
-    @Query("SELECT i FROM Item i WHERE i.status = 'AVAILABLE' "
-            + "AND (:keyword IS NULL OR LOWER(i.title) LIKE LOWER(CONCAT('%', CAST(:keyword AS string), '%'))) "
+    @Query("SELECT i FROM Item i WHERE "
+            + "(:keyword IS NULL OR LOWER(i.title) LIKE LOWER(CONCAT('%', CAST(:keyword AS string), '%'))) "
             + "AND (:category IS NULL OR i.category = :category) "
             + "AND (:minPrice IS NULL OR i.price >= :minPrice) "
             + "AND (:maxPrice IS NULL OR i.price <= :maxPrice)")
