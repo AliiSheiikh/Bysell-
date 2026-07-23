@@ -9,8 +9,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Set;
+
 @Service
 public class UserService {
+
+    private static final Set<String> MONTREAL_UNIVERSITY_EMAIL_DOMAINS = Set.of(
+            "mcgill.ca",
+            "concordia.ca",
+            "umontreal.ca",
+            "uqam.ca",
+            "hec.ca",
+            "polymtl.ca");
 
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
@@ -27,8 +37,20 @@ public class UserService {
     }
 
     public User createUser(User user, String rawPassword) {
+        if (!isMontrealUniversityEmail(user.getEmail())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "You must be a Montreal university student to register. Please use your school email "
+                            + "(McGill, Concordia, Université de Montréal, UQAM, HEC Montréal, or Polytechnique Montréal).");
+        }
+
         user.setPasswordHash(passwordEncoder.encode(rawPassword));
         return userRepository.save(user);
+    }
+
+    private boolean isMontrealUniversityEmail(String email) {
+        String domain = email.substring(email.lastIndexOf('@') + 1).toLowerCase();
+        return MONTREAL_UNIVERSITY_EMAIL_DOMAINS.stream()
+                .anyMatch(allowed -> domain.equals(allowed) || domain.endsWith("." + allowed));
     }
 
     public User getUserById(Long id) {
