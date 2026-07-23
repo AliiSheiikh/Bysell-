@@ -1,0 +1,10 @@
+**/node_modules
+**/target
+**/dist
+**/.idea
+**/.vscode
+backend/uploads
+.git
+.env
+.env.*
+!.env.example
