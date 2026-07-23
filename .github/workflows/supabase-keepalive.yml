@@ -1,0 +1,23 @@
+name: Supabase Keep-Alive
+
+on:
+  schedule:
+    # Twice a week, well inside Supabase's 7-day inactivity window,
+    # to leave margin for GitHub occasionally delaying scheduled runs.
+    - cron: '0 12 * * 1,4'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase Storage bucket
+        run: |
+          curl -sf "${{ secrets.SUPABASE_URL }}/storage/v1/bucket/item-images" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_KEY }}" \
+            -H "apikey: ${{ secrets.SUPABASE_SERVICE_KEY }}"
+
+      - name: Ping Supabase database via PostgREST
+        run: |
+          curl -sf "${{ secrets.SUPABASE_URL }}/rest/v1/" \
+            -H "apikey: ${{ secrets.SUPABASE_SERVICE_KEY }}"

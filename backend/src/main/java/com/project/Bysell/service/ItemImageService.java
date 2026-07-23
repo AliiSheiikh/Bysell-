@@ -7,13 +7,15 @@ import com.project.Bysell.repository.ItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -31,9 +33,16 @@ public class ItemImageService {
 
     private final ItemImageRepository itemImageRepository;
     private final ItemRepository itemRepository;
+    private final RestClient restClient = RestClient.create();
 
-    @Value("${app.upload-dir}")
-    private String uploadDir;
+    @Value("${app.supabase.url}")
+    private String supabaseUrl;
+
+    @Value("${app.supabase.bucket}")
+    private String bucket;
+
+    @Value("${app.supabase.service-key}")
+    private String serviceKey;
 
     @Autowired
     public ItemImageService(ItemImageRepository itemImageRepository, ItemRepository itemRepository) {
@@ -74,23 +83,29 @@ public class ItemImageService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only JPEG, PNG, GIF, or WebP images are allowed");
         }
 
+        String filename = UUID.randomUUID() + extension;
+
         try {
-            Path uploadPath = Path.of(uploadDir);
-            Files.createDirectories(uploadPath);
-
-            String filename = UUID.randomUUID() + extension;
-
-            Files.copy(file.getInputStream(), uploadPath.resolve(filename));
-
-            ItemImage image = ItemImage.builder()
-                    .item(item)
-                    .imageUrl("/images/" + filename)
-                    .build();
-
-            return itemImageRepository.save(image);
-        } catch (IOException e) {
+            restClient.post()
+                    .uri(URI.create(supabaseUrl + "/storage/v1/object/" + bucket + "/" + filename))
+                    .header("Authorization", "Bearer " + serviceKey)
+                    .header("apikey", serviceKey)
+                    .contentType(MediaType.parseMediaType(file.getContentType()))
+                    .body(file.getBytes())
+                    .retrieve()
+                    .toBodilessEntity();
+        } catch (IOException | RestClientException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to store image", e);
         }
+
+        String imageUrl = supabaseUrl + "/storage/v1/object/public/" + bucket + "/" + filename;
+
+        ItemImage image = ItemImage.builder()
+                .item(item)
+                .imageUrl(imageUrl)
+                .build();
+
+        return itemImageRepository.save(image);
     }
 
     public List<ItemImage> getImagesForItem(Long itemId) {
@@ -122,10 +137,9 @@ public class ItemImageService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "An item must have at least one image");
         }
 
-        String filename = image.getImageUrl().replace("/images/", "");
         try {
-            Files.deleteIfExists(Path.of(uploadDir, filename));
-        } catch (IOException e) {
+            deleteFromStorage(image.getImageUrl());
+        } catch (RestClientException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to delete image file", e);
         }
 
@@ -136,14 +150,24 @@ public class ItemImageService {
         List<ItemImage> images = itemImageRepository.findByItemIdOrderByIdAsc(itemId);
 
         for (ItemImage image : images) {
-            String filename = image.getImageUrl().replace("/images/", "");
             try {
-                Files.deleteIfExists(Path.of(uploadDir, filename));
-            } catch (IOException ignored) {
-                // best-effort: a stray file we can't remove shouldn't block deleting the item's records
+                deleteFromStorage(image.getImageUrl());
+            } catch (RestClientException ignored) {
+                // best-effort: a stray object we can't remove shouldn't block deleting the item's records
             }
         }
 
         itemImageRepository.deleteAll(images);
+    }
+
+    private void deleteFromStorage(String imageUrl) {
+        String filename = imageUrl.substring(imageUrl.lastIndexOf('/') + 1);
+
+        restClient.delete()
+                .uri(URI.create(supabaseUrl + "/storage/v1/object/" + bucket + "/" + filename))
+                .header("Authorization", "Bearer " + serviceKey)
+                .header("apikey", serviceKey)
+                .retrieve()
+                .toBodilessEntity();
     }
 }

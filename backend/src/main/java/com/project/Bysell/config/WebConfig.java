@@ -1,6 +1,5 @@
 package com.project.Bysell.config;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -13,14 +12,8 @@ import java.io.IOException;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    @Value("${app.upload-dir}")
-    private String uploadDir;
-
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/images/**")
-                .addResourceLocations("file:" + uploadDir + "/");
-
         // Serves the built React app; unrecognized paths fall back to index.html
         // so client-side routes like /items/5 work on a direct load or refresh.
         registry.addResourceHandler("/**")
