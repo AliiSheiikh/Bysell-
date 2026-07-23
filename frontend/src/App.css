@@ -391,3 +391,92 @@ a.item-card:hover {
   font-size: 0.85rem;
   color: var(--color-text-muted);
 }
+
+/* Welcome hero */
+
+.welcome-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+  padding: var(--space-7) var(--space-6);
+  margin-bottom: var(--space-7);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.welcome-hero-text {
+  max-width: 480px;
+}
+
+.welcome-tag {
+  display: inline-flex;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--color-primary-tint);
+  color: var(--color-primary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: var(--space-3);
+}
+
+.welcome-hero-text h1 {
+  font-size: 2rem;
+  margin-bottom: var(--space-3);
+}
+
+.welcome-subtitle {
+  color: var(--color-text-muted);
+  font-size: 1rem;
+  margin-bottom: var(--space-5);
+}
+
+.welcome-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.welcome-cta {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+}
+
+.welcome-cta:hover {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}
+
+.welcome-login-link {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.welcome-hero-image {
+  width: 220px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 720px) {
+  .welcome-hero {
+    flex-direction: column;
+    text-align: center;
+    padding: var(--space-6) var(--space-5);
+  }
+
+  .welcome-hero-text {
+    max-width: none;
+  }
+
+  .welcome-actions {
+    justify-content: center;
+  }
+
+  .welcome-hero-image {
+    width: 160px;
+  }
+}

@@ -1,9 +1,12 @@
 import { useEffect, useState, type FormEvent } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { getItems, type SortBy } from '../api'
+import { isLoggedIn } from '../auth'
 import { CATEGORIES, formatLabel, type Category, type Item } from '../types'
+import WelcomePage from './WelcomePage'
 
 export default function ProductsPage() {
+  useLocation() // re-render whenever the route changes, so isLoggedIn() below reads fresh
   const [items, setItems] = useState<Item[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
@@ -49,6 +52,8 @@ export default function ProductsPage() {
 
   return (
     <div>
+      {!isLoggedIn() && <WelcomePage />}
+
       <h1>Available Items</h1>
 
       <form onSubmit={handleSearch} className="search-form">
