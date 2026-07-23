@@ -24,4 +24,4 @@ FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 COPY --from=backend-build /backend/target/*.jar app.jar
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-XX:TieredStopAtLevel=1", "-XX:+UseSerialGC", "-jar", "app.jar"]
