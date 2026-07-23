@@ -4,6 +4,7 @@ import com.project.Bysell.dto.ItemImageResponse;
 import com.project.Bysell.model.ItemImage;
 import com.project.Bysell.service.ItemImageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -30,6 +31,7 @@ public class ItemImageController {
     }
 
     @PostMapping
+    @CacheEvict(value = "items", key = "#itemId")
     public ResponseEntity<ItemImageResponse> uploadImage(@PathVariable Long itemId, @RequestParam("file") MultipartFile file,
                                                            @AuthenticationPrincipal Long requesterId) {
         ItemImage image = itemImageService.uploadImage(itemId, file, requesterId);
@@ -55,6 +57,7 @@ public class ItemImageController {
     }
 
     @DeleteMapping("/{imageId}")
+    @CacheEvict(value = "items", key = "#itemId")
     public ResponseEntity<Void> deleteImage(@PathVariable Long itemId, @PathVariable Long imageId,
                                              @AuthenticationPrincipal Long requesterId) {
         itemImageService.deleteImage(itemId, imageId, requesterId);

@@ -13,6 +13,8 @@ import com.project.Bysell.service.ItemImageService;
 import com.project.Bysell.service.ItemService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -149,6 +151,7 @@ public class ItemController {
     }
 
     @GetMapping("/{id}")
+    @Cacheable(value = "items", key = "#id")
     public ItemDetailResponse getItem(@PathVariable Long id) {
         Item item = itemService.getItemById(id);
         User owner = item.getOwner();
@@ -177,6 +180,7 @@ public class ItemController {
     }
 
     @PatchMapping("/{id}")
+    @CacheEvict(value = "items", key = "#id")
     public ItemResponse updateItem(@PathVariable Long id, @Valid @RequestBody ItemUpdateRequest request,
                                     @AuthenticationPrincipal Long requesterId) {
         Item item = itemService.updateItem(
@@ -201,6 +205,7 @@ public class ItemController {
     }
 
     @DeleteMapping("/{id}")
+    @CacheEvict(value = "items", key = "#id")
     public ResponseEntity<Void> deleteItem(@PathVariable Long id, @AuthenticationPrincipal Long requesterId) {
         itemService.deleteItem(id, requesterId);
         return ResponseEntity.noContent().build();
