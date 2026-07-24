@@ -43,3 +43,8 @@ Bysell runs across four separate services, each chosen deliberately:
 - **Render** runs the Spring Boot app itself, serving the built React frontend from the same origin, no separate frontend host, no CORS to manage.
 
 A second GitHub Actions workflow builds and tests the full backend and frontend on every push including booting a real Spring context against live Postgres/Redis service containers and Render only deploys once those checks pass.
+
+## In Progress features
+- E-mail verification
+- Forgot password functionality
+
